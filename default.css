@@ -1,0 +1,25 @@
+
+/* default */
+body, p, li { font-family: arial, sans-serif, helvetica; font-size: 10pt; }
+
+/* headings */
+h1 { font-size: 16pt; font-weight: bold; }
+h2 { font-size: 14pt; font-weight: bold; color: #2030a0; border-bottom: 1px solid #c09060; }
+h3 { font-size: 12pt; font-weight: bold; color: #2030a0; }
+
+/* horizontal rules */
+table.hr { width: 100%; margin: 0; padding: 0; font-size: 10pt; }
+td.hr { width: 1px; padding: 0 10px; white-space: nowrap; font-style: italic; }
+hr { height: 1px; width: 100%; line-height: 1px; background-color: #c09060; border: none; }
+
+/* monospace no-format */
+tt { font-family: monospace, courier; font-size: 10pt; background-color: #f0f0f0; padding-left: 2px; padding-right: 2px; }
+pre { font-family: monospace, courier; font-size: 10pt; background-color: #e0e0e0; border: 1px solid #a0a0a0; padding: 16px; }
+
+/* images */
+img.center { max-height: 240px; }
+img.left { float: left; max-width: 140px; margin: 10px 20px 10px 0; }
+img.right { float: right; max-width: 140px; margin: 10px 0 10px 20px; }
+
+/* block quotes */
+blockquote { margin-top: 10px; margin-bottom: 10px; margin-left: 16px; padding-left: 16px; border-left: 3px solid #e0e0e0; }
