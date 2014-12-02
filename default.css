@@ -1,9 +1,9 @@
 
 /* default */
-body, p, li { font-family: arial, sans-serif, helvetica; font-size: 10pt; }
+body { margin: auto 60px; font-family: arial, sans-serif, helvetica; font-size: 10pt; }
 
 /* sections */
-div.section { clear:both; }
+.section { clear:both; }
 
 /* headings */
 h1 { font-size: 16pt; font-weight: bold; page-break-before: always; }
@@ -22,8 +22,9 @@ pre { font-family: monospace, courier; font-size: 10pt; background-color: #e0e0e
 
 /* images */
 img.center { max-height: 240px; }
-img.left { float: left; max-width: 140px; margin: 10px 20px 10px 0; }
-img.right { float: right; max-width: 140px; margin: 10px 0 10px 20px; }
+
+/* image captions */
+div.caption { font-size: 9pt; font-style: italic; margin-top:6px; }
 
 /* block quotes */
 blockquote { margin-top: 10px; margin-bottom: 10px; margin-left: 16px; padding-left: 16px; border-left: 3px solid #e0e0e0; }

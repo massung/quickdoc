@@ -30,17 +30,19 @@
       (:h3   `(:div ((:class "section")) (:h3 () ,@child-spans)))
 
       ;; paragraphs and blockquotes
-      (:p    `(:p () ,@child-spans))
-      (:bq   `(:blockquote () ,@child-spans))
+      (:p    `(:div ((:class "section")) (:p () ,@child-spans)))
+      (:bq   `(:div ((:class "section")) (:blockquote () ,@child-spans)))
 
       ;; justified images
-      (:img= `(:center () (:img ((:src ,@(markup-node-text node))))))
-      (:img< `(:img ((:src ,@(markup-node-text node)) (:class "left"))))
-      (:img> `(:img ((:src ,@(markup-node-text node)) (:class "right"))))
+      (:img  `(:center ((:class "section"))
+               ,@(destructuring-bind (url &rest caption)
+                    (split-sequence `(#\space #\tab #\|) (first (markup-node-text node)) :coalesce-separators t)
+                  `((:img ((:src ,url))) ,(when caption
+                                            `(:div ((:class "caption")) ,(format nil "~{~a~^ ~}" caption)))))))
       
       ;; lists
-      (:ul   `(:ul () ,@child-spans))
-      (:ol   `(:ol () ,@child-spans))
+      (:ul   `(:div ((:class "section")) (:ul () ,@child-spans)))
+      (:ol   `(:div ((:class "section")) (:ol () ,@child-spans)))
 
       ;; list items
       (:li   `(:li () ,@child-spans))
@@ -55,7 +57,7 @@
                                             `(:hr))))
 
       ;; pre-formatted text
-      (:pre  `(:pre () ,(format nil "~{~a~%~}" (markup-node-text node)))))))
+      (:pre  `(:div ((:class "section")) (:pre () ,(format nil "~{~a~%~}" (markup-node-text node))))))))
 
 (defmethod render-node ((node text-node))
   "Render a simple text node."

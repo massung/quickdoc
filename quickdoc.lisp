@@ -81,9 +81,7 @@
         (try ":%s?(.*)"   (values :pre $1)))
 
       ;; images
-      (try "!<%s+(.*)"    (values :img< $1))
-      (try "!>%s+(.*)"    (values :img> $1))
-      (try "!%s+(.*)"     (values :img= $1))
+      (try "!%s+(.*)"     (values :img $1))
       
       ;; unordered and ordered list items
       (try "%*%s+(.*)"    (values :ul $1))
