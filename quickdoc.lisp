@@ -26,12 +26,14 @@
 
 (in-package :quickdoc)
 
-(defstruct markup-node "Top-level node." class text spans)
-(defstruct text-node   "Encoded plain text." text)
-(defstruct tt-node     "Monospace text." text)
-(defstruct link-node   "Link." url alt)
-(defstruct strong-node "Strong text." spans)
-(defstruct em-node     "Emphasized text." spans)
+(defstruct markup-node      "Top-level node." class text spans)
+(defstruct text-node        "Encoded plain text." text)
+(defstruct tt-node          "Monospace text." text)
+(defstruct link-node        "Link." url alt)
+(defstruct strong-node      "Strong text." spans)
+(defstruct em-node          "Emphasized text." spans)
+(defstruct superscript-node "Superscript text." spans)
+(defstruct subscript-node   "Subscript text." spans)
 
 (defparameter *p-class* :p
   "Default markup-node-class to use for paragraphs.")

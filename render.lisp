@@ -78,3 +78,11 @@
 (defmethod render-node ((node em-node))
   "Render emphasized text."
   `(:em () ,@(mapcar #'render-node (em-node-spans node))))
+
+(defmethod render-node ((node superscript-node))
+  "Render superscript text."
+  `(:sup () ,@(mapcar #'render-node (superscript-node-spans node))))
+
+(defmethod render-node ((node subscript-node))
+  "Render subscript text."
+  `(:sub () ,@(mapcar #'render-node (subscript-node-spans node))))

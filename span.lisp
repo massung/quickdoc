@@ -40,12 +40,14 @@
   ;; emphasis
   ("%*%*"             (values :strong))
   ("__"               (values :em))
+  ("%^%^"             (values :superscript))
+  (",,"               (values :subscript))
 
   ;; links
   ("%[%["             (push-lexer 'link-lexer :+link))
 
   ;; non-terminal characters
-  (".[^%[%(%*_`]*"    (values :text $$)))
+  (".[^%[%(%*_`%^,]*" (values :text $$)))
 
 (deflexer tt-lexer
 
@@ -91,6 +93,8 @@
   ((span e) $1)
   ((span strong) $1)
   ((span em) $1)
+  ((span super) $1)
+  ((span sub) $1)
 
   ;; content spans
   ((e text) $1)
@@ -115,20 +119,44 @@
   ((link :+link :url :alt :text :-link)
    (make-link-node :url $2 :alt $4))
 
-  ;; strong emphasis
+  ;; emphasis spans
   ((strong :strong /strong)
    (make-strong-node :spans $2))
   ((em :em /em)
    (make-em-node :spans $2))
+  ((super :superscript /super)
+   (make-superscript-node :spans $2))
+  ((sub :subscript /sub)
+   (make-subscript-node :spans $2))
 
   ;; strong spans
   ((/strong e /strong) `(,$1 ,@$2))
   ((/strong em /strong) `(,$1 ,@$2))
+  ((/strong super /strong) `(,$1 ,@$2))
+  ((/strong sub /strong) `(,$1 ,@$2))
   ((/strong :strong))
   ((/strong :error))
 
   ;; em spans
   ((/em e /em) `(,$1 ,@$2))
   ((/em strong /em) `(,$1 ,@$2))
+  ((/em super /em) `(,$1 ,@$2))
+  ((/em sub /em) `(,$1 ,@$2))
   ((/em :em))
-  ((/em :error)))
+  ((/em :error))
+
+  ;; superscript spans
+  ((/super e /super) `(,$1 ,@$2))
+  ((/super strong /super) `(,$1 ,@$2))
+  ((/super em /super) `(,$1 ,@$2))
+  ((/super sub /super) `(,$1 ,@$2))
+  ((/super :superscript))
+  ((/super :error))
+
+  ;; subscript spans
+  ((/sub e /sub) `(,$1 ,@$2))
+  ((/sub strong /sub) `(,$1 ,@$2))
+  ((/sub em /sub) `(,$1 ,@$2))
+  ((/sub super /sub) `(,$1 ,@$2))
+  ((/sub :superscript))
+  ((/sub :error)))
