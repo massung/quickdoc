@@ -158,5 +158,5 @@
   ((/sub strong /sub) `(,$1 ,@$2))
   ((/sub em /sub) `(,$1 ,@$2))
   ((/sub super /sub) `(,$1 ,@$2))
-  ((/sub :superscript))
+  ((/sub :subscript))
   ((/sub :error)))
