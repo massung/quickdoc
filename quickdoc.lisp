@@ -75,17 +75,19 @@
         (try "%-%-%-.*"   (values :hr (string-trim '(#\- #\space #\tab) $$)))
       
         ;; blockquotes
-        (try ">%s+(.*)"   (values :bq $1))
+        (try ">%s(.*)"    (values :bq $1))
+        (try ">%s*$"      (values :bq ""))
       
         ;; preformatted lines
-        (try ":%s?(.*)"   (values :pre $1)))
+        (try ":%s(.*)"    (values :pre $1))
+        (try ":%s*$"      (values :pre "")))
 
       ;; images
-      (try "!%s+(.*)"     (values :img $1))
+      (try "!%s(.*)"      (values :img $1))
       
       ;; unordered and ordered list items
-      (try "%*%s+(.*)"    (values :ul $1))
-      (try "#%s+(.*)"     (values :ol $1))
+      (try "%*%s(.*)"     (values :ul $1))
+      (try "#%s(.*)"      (values :ol $1))
       
       ;; line breaks are paragraph delimiters
       (try "%s*$"))
