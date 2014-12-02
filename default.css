@@ -2,12 +2,16 @@
 /* default */
 body, p, li { font-family: arial, sans-serif, helvetica; font-size: 10pt; }
 
+/* sections */
+div.section { clear:both; }
+
 /* headings */
-h1 { font-size: 16pt; font-weight: bold; }
-h2 { font-size: 14pt; font-weight: bold; color: #2030a0; border-bottom: 1px solid #c09060; }
-h3 { font-size: 12pt; font-weight: bold; color: #2030a0; }
+h1 { font-size: 16pt; font-weight: bold; page-break-before: always; }
+h2 { font-size: 14pt; font-weight: bold; page-break-before: always; color: #2030a0; border-bottom: 1px solid #c09060; }
+h3 { font-size: 12pt; font-weight: bold; page-break-before: always; color: #2030a0; }
 
 /* horizontal rules */
+table { text-align:center; margin-left: auto; margin-right: auto; }
 table.hr { width: 100%; margin: 0; padding: 0; font-size: 10pt; }
 td.hr { width: 1px; padding: 0 10px; white-space: nowrap; font-style: italic; }
 hr { height: 1px; width: 100%; line-height: 1px; background-color: #c09060; border: none; }

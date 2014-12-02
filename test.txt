@@ -102,8 +102,6 @@ By default images are centered, but can be aligned left by using `!<` and right 
 
 When aligned to one side or the other (or both), any text will be formatted around them cleanly. There is no method of specifying the render size in markup, but the HTML renderer is permitted to cap the height of centered images and the widths of aligned images to something that is appropriate.
 
-Regardless, all headings will begin a new `<DIV>`.
-
 === Horizontal Rules
 
 A horizontal rule can be placed anywhere by beginning a line with `---`.

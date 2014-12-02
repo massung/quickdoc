@@ -25,9 +25,9 @@
     (case (markup-node-class node)
       
       ;; headings
-      (:h1   `(:h1 () ,@child-spans))
-      (:h2   `(:h2 () ,@child-spans))
-      (:h3   `(:h3 () ,@child-spans))
+      (:h1   `(:div ((:class "section")) (:h1 () ,@child-spans)))
+      (:h2   `(:div ((:class "section")) (:h2 () ,@child-spans)))
+      (:h3   `(:div ((:class "section")) (:h3 () ,@child-spans)))
 
       ;; paragraphs and blockquotes
       (:p    `(:p () ,@child-spans))
@@ -46,13 +46,13 @@
       (:li   `(:li () ,@child-spans))
       
       ;; horizontal rules
-      (:hr   (if (plusp (length (first (markup-node-text node))))
-                 `(:table ((:class "hr"))
-                   (:tr ()
-                    (:td () (:hr))
-                    (:td ((:class "hr")) ,@(markup-node-text node))
-                    (:td () (:hr))))
-               `(:hr)))
+      (:hr   `(:div ((:class "section")) ,(if (plusp (length (first (markup-node-text node))))
+                                              `(:table ((:class "hr"))
+                                                (:tr ()
+                                                 (:td () (:hr))
+                                                 (:td ((:class "hr")) ,@(markup-node-text node))
+                                                 (:td () (:hr))))
+                                            `(:hr))))
 
       ;; pre-formatted text
       (:pre  `(:pre () ,(format nil "~{~a~%~}" (markup-node-text node)))))))
