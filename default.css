@@ -17,8 +17,8 @@ td.hr { width: 1px; padding: 0 10px; white-space: nowrap; font-style: italic; }
 hr { height: 1px; width: 100%; line-height: 1px; background-color: #c09060; border: none; }
 
 /* monospace no-format */
-tt { font-family: monospace, courier; font-size: 10pt; background-color: #f0f0f0; padding-left: 2px; padding-right: 2px; }
-pre { font-family: monospace, courier; font-size: 10pt; background-color: #e0e0e0; border: 1px solid #a0a0a0; padding: 16px; }
+tt { font-family: monospace, courier; font-size: 10pt; background-color: #f0f0f0; padding-left: 2px; padding-right: 2px; font-weight: normal; font-style: normal; }
+pre { font-family: monospace, courier; font-size: 10pt; background-color: #e0e0e0; border: 1px solid #a0a0a0; padding: 16px; font-weight: normal; font-style: normal; }
 
 /* images */
 img.center { max-height: 240px; }

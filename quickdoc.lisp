@@ -26,6 +26,11 @@
 
 (in-package :quickdoc)
 
+(defclass quickdoc ()
+  ((nodes :initform nil :accessor quickdoc-nodes)
+   (meta  :initform nil :accessor quickdoc-meta-tags))
+  (:documentation "Document object holding all parsed nodes and meta comment tags."))
+
 (defstruct markup-node      "Top-level node." class text spans)
 (defstruct text-node        "Encoded plain text." text)
 (defstruct tt-node          "Monospace text." text)
@@ -42,18 +47,45 @@
   (defparameter *default-css* (slurp (merge-pathnames #p"default.css" *compile-file-pathname*))
     "The default CSS to use for rendered markup."))
 
-(defun render-quickdoc (nodes &key (css-theme *default-css*) (title "Untitled QuickDoc"))
+(defparameter *meta-tag-re* (compile-re "@([^:]+):%s*(.*)")
+  "Pattern for matching meta tags.")
+
+(defun render-quickdoc (doc)
   "Return a list of HTML objects for a list of nodes."
-  (html `(:html ()
-          (:head ()
-           (:title () ,title)
-           (:style () ,css-theme))
-          (:body () ,@(mapcar 'render-node nodes)))))
+  (flet ((get-opt (opt)
+           (second (assoc opt (quickdoc-meta-tags doc) :test #'string-equal))))
+    (html `(:html ()
+            (:head ()
+             (:meta ((:http-equiv "Content-Type")
+                     (:charset "UTF-8")
+                     (:content "text/html")))
+             
+             ;; set the title and embed the stylesheet
+             (:title () ,(or (get-opt :title) "Untitled QuickDoc"))
+
+             ;; link to the stylesheet to use if present or embed the default
+             ,(if-let (ss (get-opt :stylesheet))
+                  `(:link ((:rel "stylesheet") (:href ,ss) (:type "text/css")))
+                `(:style () ,*default-css*))
+             
+             ;; add all the meta information to the document
+             ,@(loop for (key value) in (quickdoc-meta-tags doc)
+                     collect `(:meta ((:name ,(string-downcase key)) (:content ,value)))))
+            (:body () ,@(mapcar 'render-node (quickdoc-nodes doc)))))))
 
 (defun parse-quickdoc (string)
   "Given a string, read each line and pass it through the node group parser."
-  (with-input-from-string (s string)
-    (parse-group #'(lambda () (read-line s nil nil)))))
+  (let ((doc (make-instance 'quickdoc)))
+    (with-input-from-string (s string)
+      (labels ((next-line ()
+                 (when-let (line (read-line s nil nil))
+                   (with-re-match (m (match-re *meta-tag-re* line) :no-match line)
+                     (prog1 (next-line)
+                       (let ((k (string-trim '(#\space #\tab) $1))
+                             (v (string-trim '(#\space #\tab) $2)))
+                         (push (list k v) (quickdoc-meta-tags doc))))))))
+        (prog1 doc
+          (setf (quickdoc-nodes doc) (parse-group #'next-line)))))))
 
 (defun parse-node (line &optional recursive-p)
   "Return a markup node given the start of a line of text."

@@ -1,6 +1,14 @@
+@Title      : QuickDoc Example
+@Author     : Jeff Massung
+@Date       : 2014.12.2
+@Stylesheet : ./default.css
+@Description: An example of everything QuickDoc can do in one place.
+
 = QuickDoc Title
 
 This is a sample QuickDoc markup test. The source for this can be found on [[https://raw.githubusercontent.com/massung/quickdoc/master/example.txt|GitHub]]. It is a dead-simple and easily parsed wiki-style markup for [[http://www.listpworks.com|LispWorks]].
+
+In addition to markup, it also supports meta tag information to be embedded in any generated HTML and custom stylesheeting.
 
 == Formatting Rules
 
@@ -132,6 +140,23 @@ Text can optionally follow the `---`, which the renderer may use to create a hor
 
 That's all there is to it.
 
+== Meta Tagging
+
+Any line that begins with a `@` is ignored and considered a meta comment. When the HTML for the QuickDoc is being generated, `<META>` tags will be created for each of the comments.
+
+: @Author: Me
+
+The above will output a `<meta name="author" content="Me">` tag in the `<HEAD>` of the HTML. Everything before the `:` is considered the "key" and everything after is the content value.
+
+__Note: if a meta comment line is malformed (e.g. missing a `:`) then it is treated as a paragraph line and will be formatted.__
+
+A few meta comments are special and can actually affect the visual style of the HTML that is generated:
+
+* `@title` will set the `<TITLE>` of the document.
+* `@stylesheet` will add a `<LINK>` to a given stylesheet.
+
+The meta comments are case-insensitive, so `@title`, `@TITLE`, and `@Title` will all work, and meta keys will always be written out as lowercase.
+
 == Possible Future Features
 
 Above all else, the goals of QuickDoc are to be...
@@ -142,7 +167,6 @@ Above all else, the goals of QuickDoc are to be...
 
 Without compromising the above, these features are being considered (in no particular order):
 
-* Optional settings for <HEAD> (e.g. @TITLE, @STYLESHEET).
-* Table of contents generation.
 * Word definitions (`<dl>`, `<dt>`, and `<dd>` tags).
+* Table of contents generation.
 * Underlining.
