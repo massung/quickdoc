@@ -1,18 +1,37 @@
-@Title      : QuickDoc Example
-@Author     : Jeff Massung
-@Date       : 2014.12.2
-@Stylesheet : ./default.css
-@Description: An example of everything QuickDoc can do in one place.
+@Title       : QuickDoc Example
+@Author      : Jeff Massung
+@Date        : 2014.12.2
+@Stylesheet  : ./default.css
+@Description : An example of everything QuickDoc can do in one place.
 
 = QuickDoc Title
 
-This is a sample QuickDoc markup test. The source for this can be found on [[https://raw.githubusercontent.com/massung/quickdoc/master/example.txt|GitHub]]. It is a dead-simple and easily parsed wiki-style markup for [[http://www.listpworks.com|LispWorks]].
+This is a sample QuickDoc markup test. The source for this can be found on [[https://raw.githubusercontent.com/massung/quickdoc/master/example.txt|GitHub]]. It is a dead-simple and easily parsed wiki-style markup for [[http://www.listpworks.com|LispWorks]]. In addition to markup, it also supports meta tag information to be embedded in any generated HTML and custom stylesheeting.
 
-In addition to markup, it also supports meta tag information to be embedded in any generated HTML and custom stylesheeting.
+== Document Header
 
-== Formatting Rules
+At the very beginning of the document, if a line begins with a `@` then it is considered a meta comment. These are both options indicating how the document should be rendered, and also meta information for the generated HTML.
 
-QuickDoc is like most markdown formats. However, it subscribes to the notion that less is more and allows for much prettier output. It allows for ATX-style headings, paragraphs, blockquotes, links, images, bullet lists, monospace inlined code, and pre-formatted blocks. And many of these can be embedded recursively.
+: @Title  : Example QuickDoc
+: @Author : Me
+: @Date   : Today
+
+The above will set the `<TITLE>` of the QuickDoc to "Example QuickDoc" and add `<META>` tags for "author" and "date" __(note how "author" and "date" are downcased, all meta comment keys are case-insensitive and forced lowercase)__.
+
+The syntax for a meta comment is `<name> : <content>`. If no `:` is present separating the name and content, then the entire comment is considered to be the name and the content attribute is left as empty.
+
+The first line in the document that does not begin with an `@` begins the actual document body and any other lines beginning with `@` from then will be treated as plain text.
+
+A few meta comments are special and can actually affect the visual style of the HTML that is generated:
+
+* `@title` will set the `<TITLE>` of the document.
+* `@stylesheet` will add a `<LINK>` to a given stylesheet.
+
+The meta comments are case-insensitive, so `@title`, `@TITLE`, and `@Title` will all work, and meta keys will always be written out as lowercase.
+
+== Body Formatting Rules
+
+QuickDoc is like most markdown formats. However, it subscribes to the notion that less is more and allows for much prettier output. It allows for ATX-style headings, paragraphs, blockquotes, links, images, bullet lists, and pre-formatted blocks. And many of these can be embedded recursively.
 
 === Headings
 
@@ -136,27 +155,6 @@ Text can optionally follow the `---`, which the renderer may use to create a hor
 
 --- This is a rule with text in it. ---
 
-=== That's it!
-
-That's all there is to it.
-
-== Meta Tagging
-
-Any line that begins with a `@` is ignored and considered a meta comment. When the HTML for the QuickDoc is being generated, `<META>` tags will be created for each of the comments.
-
-: @Author: Me
-
-The above will output a `<meta name="author" content="Me">` tag in the `<HEAD>` of the HTML. Everything before the `:` is considered the "key" and everything after is the content value.
-
-__Note: if a meta comment line is malformed (e.g. missing a `:`) then it is treated as a paragraph line and will be formatted.__
-
-A few meta comments are special and can actually affect the visual style of the HTML that is generated:
-
-* `@title` will set the `<TITLE>` of the document.
-* `@stylesheet` will add a `<LINK>` to a given stylesheet.
-
-The meta comments are case-insensitive, so `@title`, `@TITLE`, and `@Title` will all work, and meta keys will always be written out as lowercase.
-
 == Possible Future Features
 
 Above all else, the goals of QuickDoc are to be...
@@ -170,3 +168,9 @@ Without compromising the above, these features are being considered (in no parti
 * Word definitions (`<dl>`, `<dt>`, and `<dd>` tags).
 * Table of contents generation.
 * Underlining.
+
+== That's it!
+
+That's all there is to it.
+
+If you find QuickDoc useful, [[mailto:massung@gmail.com|please let me know]]!
