@@ -25,38 +25,42 @@
     (case (markup-node-class node)
       
       ;; headings
-      (:h1   `(:div ((:class "section")) (:h1 () ,@child-spans)))
-      (:h2   `(:div ((:class "section")) (:h2 () ,@child-spans)))
-      (:h3   `(:div ((:class "section")) (:h3 () ,@child-spans)))
+      (:h1   `(:h1 () ,@child-spans))
+      (:h2   `(:h2 () ,@child-spans))
+      (:h3   `(:h3 () ,@child-spans))
+      (:h4   `(:h4 () ,@child-spans))
 
       ;; paragraphs and blockquotes
-      (:p    `(:div ((:class "section")) (:p () ,@child-spans)))
-      (:bq   `(:div ((:class "section")) (:blockquote () ,@child-spans)))
+      (:p    `(:p () ,@child-spans))
+      (:bq   `(:blockquote () ,@child-spans))
 
       ;; justified images
-      (:img  `(:center ((:class "section"))
-               ,@(multiple-value-bind (url cap)
-                     (split-re #/%s*\|%s*/ (first (markup-node-text node)))
-                   `((:img ((:src ,url))) ,@(when cap `((:div ((:class "caption")) ,cap)))))))
+      (:img  `(:center () ,@(multiple-value-bind (url cap)
+                                (split-re #/%s*\|%s*/ (first (markup-node-text node)))
+                              `((:img ((:src ,url))) ,@(when cap `((:div ((:class "caption")) ,cap)))))))
       
       ;; lists
-      (:ul   `(:div ((:class "section")) (:ul () ,@child-spans)))
-      (:ol   `(:div ((:class "section")) (:ol () ,@child-spans)))
+      (:ul   `(:ul () ,@child-spans))
+      (:ol   `(:ol () ,@child-spans))
 
       ;; list items
       (:li   `(:li () ,@child-spans))
       
       ;; horizontal rules
-      (:hr   `(:div ((:class "section")) ,(if (plusp (length (first (markup-node-text node))))
-                                              `(:table ((:class "hr"))
-                                                (:tr ()
-                                                 (:td () (:hr))
-                                                 (:td ((:class "hr")) ,@(markup-node-text node))
-                                                 (:td () (:hr))))
-                                            `(:hr))))
+      (:hr   (if (plusp (length (first (markup-node-text node))))
+                 `(:center ()
+                   (:table ((:style "width:100%;margin:0;padding:0;margin-left:auto;margin-right:auto")
+                            (:cellspacing 0)
+                            (:cellpadding 0))
+                    (:tr ()
+                     (:td () (:hr ((:style "width:100%"))))
+                     (:td ((:class "hr") (:style "width:1px;padding:0 10px;white-space:nowrap;"))
+                      ,@(markup-node-text node))
+                     (:td () (:hr ((:style "width:100%")))))))
+               `(:hr)))
 
       ;; pre-formatted text
-      (:pre  `(:div ((:class "section")) (:pre () ,(format nil "~{~a~%~}" (markup-node-text node))))))))
+      (:pre  `(:pre () ,(format nil "~{~a~%~}" (markup-node-text node)))))))
 
 (defmethod render-node ((node text-node))
   "Render a simple text node."

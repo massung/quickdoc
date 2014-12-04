@@ -63,22 +63,23 @@
 
 (defun render-quickdoc (doc &optional stream)
   "Return a list of HTML objects for a list of nodes."
-  (let ((html `(:html ()
-                (:head ()
-                 (:meta ((:http-equiv "Content-Type") (:content "text/html") (:charset "UTF-8")))
-                 
-                 ;; set the title and embed the stylesheet
-                 (:title () ,(or (quickdoc-title doc) "Untitled QuickDoc"))
-                 
-                 ;; link to the stylesheet to use if present or embed the default
-                 ,(if-let (ss (quickdoc-style doc))
-                      `(:link ((:rel "stylesheet") (:href ,ss) (:type "text/css")))
-                    `(:style () ,*default-css*))
-                 
-                 ;; add all the meta information to the document
-                 ,@(loop for (key value) in (quickdoc-head doc)
-                         collect `(:meta ((:name ,key) (:content ,value)))))
-                (:body () ,@(mapcar 'render-node (quickdoc-body doc))))))
+  (let* ((title (or (quickdoc-title doc) "Untitled QuickDoc"))
+         (html `(:html ()
+                 (:head ()
+                  (:meta ((:http-equiv "Content-Type") (:content "text/html") (:charset "UTF-8")))
+                  
+                  ;; set the title and embed the stylesheet
+                  (:title () ,title)
+                  
+                  ;; link to the stylesheet to use if present or embed the default
+                  ,(if-let (ss (quickdoc-style doc))
+                       `(:link ((:rel "stylesheet") (:href ,ss) (:type "text/css")))
+                     `(:style () ,*default-css*))
+                  
+                  ;; add all the meta information to the document
+                  ,@(loop for (key value) in (quickdoc-head doc)
+                          collect `(:meta ((:name ,key) (:content ,value)))))
+                 (:body () ,@(mapcar 'render-node (quickdoc-body doc))))))
     (html html stream)))
 
 (defun parse-quickdoc (string)
@@ -106,9 +107,11 @@
                      (t (push (list (string-downcase name) content) (quickdoc-head doc))))
             
             ;; done, now read the body
-            finally (return (prog1
-                                doc
-                              (setf (quickdoc-body doc) (parse-group #'(lambda () (read-line s nil nil))))))))))
+            finally (progn
+                      (setf (quickdoc-body doc) (parse-group #'(lambda () (read-line s nil nil))))
+
+                      ;; return the final document
+                      (return doc))))))
 
 (defun parse-node (line &optional recursive-p single-line-p)
   "Return a markup node given the start of a line of text."
@@ -122,6 +125,7 @@
 
       ;; headings and breaks cannot be recursively inside anything
       (unless recursive-p
+        (try "====.*"     (values :h4 (string-trim '(#\= #\space #\tab) $$)))
         (try "===.*"      (values :h3 (string-trim '(#\= #\space #\tab) $$)))
         (try "==.*"       (values :h2 (string-trim '(#\= #\space #\tab) $$)))
         (try "=.*"        (values :h1 (string-trim '(#\= #\space #\tab) $$)))
@@ -170,7 +174,7 @@
          (parse-group #'(lambda () (pop text)) t t)))
     
       ;; paragraphs, captions, list items, and headings
-      ((:p :li :h1 :h2 :h3)
+      ((:p :li :h1 :h2 :h3 :h4)
        (let ((para (format nil "~{~a~^ ~}" text)))
          (parse 'span-parser (tokenize 'span-lexer para)))))))
 

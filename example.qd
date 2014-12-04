@@ -40,8 +40,9 @@ Headings are begun with the `=` characters (followed by a space) at the start of
 : = h1 =
 : == h2 ==
 : === h3 ===
+: ==== h4 ====
 
-No more than three levels of headings are permitted for simplicity.
+QuickDoc limits the heading depth to four.
 
 === Paragraphs
 
