@@ -22,7 +22,8 @@
   (:nicknames :qd)
   (:export
    #:parse-quickdoc
-   #:render-quickdoc))
+   #:render-quickdoc
+   #:compile-quickdoc))
 
 (in-package :quickdoc)
 
@@ -48,6 +49,17 @@
 (eval-when (:compile-toplevel :execute)
   (defparameter *default-css* (slurp (merge-pathnames #p"default.css" *compile-file-pathname*))
     "The default CSS to use for rendered markup."))
+
+(defun compile-quickdoc (source &optional target)
+  "Read a QuickDoc source file and render it as HTML to a target file."
+  (unless target
+    (setf target (merge-pathnames (make-pathname :type "html") (pathname source))))
+
+  ;; open the target file, parse the quickdoc, and render it
+  (when-let (doc (parse-quickdoc (slurp source)))
+    (prog1 doc
+      (with-open-file (s target :direction :output :if-exists :supersede)
+        (render-quickdoc doc s)))))
 
 (defun render-quickdoc (doc &optional stream)
   "Return a list of HTML objects for a list of nodes."

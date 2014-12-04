@@ -8,9 +8,12 @@ To get a sense of what QuickDoc can do, check out the [example document](https:/
 
 ## Quickstart
 
-The `quickdoc` package has two main functions:
+The `quickdoc` package has three main functions:
 
-	(parse-quickdoc string)                     ;=> quickdoc
-	(render-quickdoc quickdoc &optional stream) ;=> nil
+	(parse-quickdoc string)                       ;=> quickdoc
+	(render-quickdoc quickdoc &optional stream)   ;=> nil
+	(compile-quickdoc pathname &optional target)  ;=> quickdoc
 
 Simply pass a string to `parse-quickdoc`, which will create a quickdoc object, which can then be rendered to HTML with `render-quickdoc`.
+
+The `compile-quickdoc` function is merely a helpful wrapper that will read the contents of a source file, parse it, and render it back out to a (new) target HTML file. If no target is provided, a file with the same name as the source, but with an HTML extension is written out. When done, the quickdoc object that was parsed is returned.
