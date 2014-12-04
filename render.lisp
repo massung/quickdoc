@@ -35,10 +35,11 @@
 
       ;; justified images
       (:img  `(:center ((:class "section"))
-               ,@(destructuring-bind (url &rest caption)
-                    (split-sequence `(#\space #\tab #\|) (first (markup-node-text node)) :coalesce-separators t)
-                  `((:img ((:src ,url))) ,(when caption
-                                            `(:div ((:class "caption")) ,(format nil "~{~a~^ ~}" caption)))))))
+               ,@(multiple-value-bind (url caption)
+                     (split-re #/\|/ (first (markup-node-text node)))
+                   `((:img ((:src ,(string-trim '(#\space #\tab) url))))
+                     ,@(when caption
+                         `((:div ((:class "caption")) ,(string-trim '(#\space #\tab) caption))))))))
       
       ;; lists
       (:ul   `(:div ((:class "section")) (:ul () ,@child-spans)))
