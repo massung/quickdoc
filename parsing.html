@@ -1,0 +1,62 @@
+<HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html" CHARSET="UTF-8"><TITLE>QuickDoc Parsing</TITLE><STYLE>
+/* default */
+body { margin: 20px 20px; font-family: arial, sans-serif, helvetica; font-size: 10pt; }
+
+/* global classes */
+.section { clear:both; }
+.caption { font-size: 9pt; font-style: italic; margin-top:6px; }
+
+/* headings */
+h1 { font-size: 16pt; font-weight: bold; color: #2030a0; }
+h2 { font-size: 14pt; font-weight: bold; color: #2030a0; border-bottom: 1px solid #c09060; }
+h3 { font-size: 12pt; font-weight: bold; color: #2030a0; }
+h4 { font-size: 11pt; font-weight: bold; color: #000000; }
+
+/* horizontal rules */
+table { text-align:center; margin-left: auto; margin-right: auto; }
+table.hr { width: 100%; margin: 0; padding: 0; font-size: 10pt; }
+td.hr { width: 1px; padding: 0 10px; white-space: nowrap; font-style: italic; }
+hr { height: 1px; width: 100%; line-height: 1px; background-color: #c09060; border: none; }
+
+/* monospace no-format */
+tt { font-family: monospace, courier; font-size: 10pt; background-color: #f0f0f0; padding-left: 2px; padding-right: 2px; font-weight: normal; font-style: normal; }
+pre { font-family: monospace, courier; font-size: 10pt; background-color: #e0e0e0; border: 1px solid #a0a0a0; padding: 16px; font-weight: normal; font-style: normal; }
+
+/* images */
+img { max-width: 100%; max-height: 240px; display :block; height:auto !important; }
+
+/* block quotes */
+blockquote { margin-left: 16px; padding-left: 16px; border-left: 3px solid #e0e0e0; }
+</STYLE><META NAME="date" CONTENT="2014.12.3"><META NAME="author" CONTENT="Jeffrey Massung"></HEAD><BODY><DIV CLASS="section"><H1>QuickDoc Parsing Strategies</H1></DIV><DIV CLASS="section"><P>This is a tutorial about how the QuickDoc parser works so that it can be implemented in other languages as well. The strategies used here may be equally useful for those building parsers for other mark-up/down files as well, but QuickDoc is designed to not be ambiguous, and can therefore use an actual grammar instead of best-guess regular expression pattern matching.</P></DIV><DIV CLASS="section"><H2>Stages</H2></DIV><DIV CLASS="section"><P>The QuickDoc parser is broken up into three parsing stages:</P></DIV><DIV CLASS="section"><UL><LI>Header parsing.</LI><LI>Body parsing.</LI><LI>Paragraph parsing.</LI></UL></DIV><DIV CLASS="section"><P>Each of these has a completely different strategy that is used, but each is very simple.</P></DIV><DIV CLASS="section"><H3>Header Parsing</H3></DIV><DIV CLASS="section"><P>Parsing a header is simply a matter of peeking at the next character to be parsed and checking to see if it is an <TT>@</TT>. If it is, read the entire line, and extract and collect the key/value pair. If not, then the header is done being parsed and all the key/value pairs collected can be returned.</P></DIV><DIV CLASS="section"><H3>Body Parsing</H3></DIV><DIV CLASS="section"><P>This is the most difficult phase of parsing. It works because QuickDoc is designed to be &quot;recursively&quot; parsed (more on that in a bit). At a high-level, the body parsing strategy is:</P></DIV><DIV CLASS="section"><OL><LI>Read the first line of the body.</LI><LI>Examine it to determine its type.</LI><DIV CLASS="section"><UL><LI>If it is a &quot;mergeable&quot; type then...</LI><DIV CLASS="section"><UL><LI>Read the next line and examine its type.</LI><LI>If they are the same, merge their contents together, repeat.</LI><LI>If not, set the current line to the one just read.</LI></UL></DIV><LI>If it is not &quot;mergeable&quot; then advance and read the next line.</LI></UL></DIV><LI>Goto step 2 and repeat until at the end of the file.</LI></OL></DIV><DIV CLASS="section"><P>Given the following example:</P></DIV><DIV CLASS="section"><PRE>= Title
+
+Hello, **world!**
+Bye.
+
+* This
+* # Is a
+* # test...
+</PRE></DIV><DIV CLASS="section"><P>There are a couple subtleties in there, but, when done you should have a list of &quot;nodes&quot; that might look something like this:</P></DIV><DIV CLASS="section"><PRE>(:h1 &quot;Title&quot;)
+(:p &quot;Hello, **world!**&quot; &quot;Bye.&quot;)
+(:list &quot;This&quot; &quot;# Is a&quot; &quot;# test...&quot;)
+</PRE></DIV><DIV CLASS="section"><P>A couple points to note:</P></DIV><DIV CLASS="section"><UL><LI>Empty lines were not collected (but were used to terminated merging!)</LI><LI>The child list items weren&apos;t parsed either.</LI></UL></DIV><DIV CLASS="section"><P>However, the astute observer will notice that if you joined the lines of the <TT>:list</TT> node together, you could recursively parse them like a normal document body and get a new set of nodes that looked like this:</P></DIV><DIV CLASS="section"><PRE>(:p &quot;This&quot;)
+(:enum &quot;Is a&quot; &quot;test...&quot;)
+</PRE></DIV><DIV CLASS="section"><P>By doing so, and then recording those in the original nodes as children, we now have a complete document body:</P></DIV><DIV CLASS="section"><PRE>(:h1 &quot;Title&quot;)
+(:p &quot;Hello, **world!**&quot; &quot;Bye.&quot;)
+(:list (:p &quot;This&quot;) (:enum &quot;Is a&quot; &quot;test...&quot;))
+</PRE></DIV><DIV CLASS="section"><P>This would be repeated (recursively) for the <TT>:enum</TT> node, and once done we&apos;d be ready to move onto the final parsing phase...</P></DIV><DIV CLASS="section"><H3>Paragraph Parsing</H3></DIV><DIV CLASS="section"><P>Once we have our tree of nodes, we can loop over them and - based on the type - decide which ones we&apos;re going to parse as paragraphs. Doing so merely involves tokenizing the text inside and then returning a list of parsed &quot;spans&quot; that indicate how to render them.</P></DIV><DIV CLASS="section"><P>Taking our paragraph (<TT>:p</TT>) node and parsing it, first it wold be tokenized into the following list of tokens:</P></DIV><DIV CLASS="section"><PRE>(:text &quot;Hello&quot;)
+(:text &quot;, &quot;)
+(:strong &quot;**&quot;)
+(:text &quot;world!&quot;)
+(:strong &quot;**&quot;)
+(:strong &quot; Bye.&quot;)
+</PRE></DIV><DIV CLASS="section"><P>Finally, we could run that through our grammar and end up with the following nodes:</P></DIV><DIV CLASS="section"><PRE>(:text &quot;Hello&quot;)
+(:text &quot;, &quot;)
+(:strong (:text &quot;world!&quot;))
+(:text &quot; Byte.&quot;)
+</PRE></DIV><DIV CLASS="section"><P>These would then (like our list) be put back into the original node list:</P></DIV><DIV CLASS="section"><PRE>(:h1 &quot;Title&quot;)
+(:p (:text &quot;Hello&quot;) (:text &quot;, &quot;) (:strong (:text &quot;world!&quot;)) (:text &quot; Byte.&quot;))
+(:list (:p &quot;This&quot;) (:enum &quot;Is a&quot; &quot;test...&quot;))
+</PRE></DIV><DIV CLASS="section"><P>We would continue and apply paragraph parsing to all nodes in our tree as necessary. Our final tree might look something like this:</P></DIV><DIV CLASS="section"><PRE>(:h1 &quot;Title&quot;)
+(:p (:text &quot;Hello&quot;) (:text &quot;, &quot;) (:strong (:text &quot;world!&quot;)) (:text &quot; Byte.&quot;))
+(:list (:p (:text &quot;This&quot;)) (:enum (:p (:text &quot;Is a&quot;)) (:p (:text &quot;test...&quot;))))
+</PRE></DIV><DIV CLASS="section"><P>And now we&apos;re ready to render the nodes as HTML.</P></DIV><DIV CLASS="section"><H2>Gotchya&apos;s</H2></DIV><DIV CLASS="section"><UL><LI>Not all node types are mergeable. In QuickDoc the mergeable node types are:</LI><DIV CLASS="section"><UL><LI>Paragraphs</LI><LI>Lists</LI><LI>Blockquotes</LI><LI>Pre-formatted blocks</LI></UL></DIV></UL></DIV><DIV CLASS="section"><UL><LI>Not all types are recursively parseable. For example:</LI><DIV CLASS="section"><UL><LI>Headers cannot be parsed inside a lists or blockquotes.</LI><LI>Lists can be inside blockquotes, but blockquotes cannot be in lists.</LI><LI>Images cannot be inside lists.</LI><LI>Pre-formatted text cannot be inside lists.</LI></UL></DIV></UL></DIV><DIV CLASS="section"><UL><LI>When rendering lists, don&apos;t forget that <TT>:p</TT> elements become <TT>&lt;LI&gt;</TT> tags.</LI></UL></DIV><DIV CLASS="section"><BLOCKQUOTE><DIV CLASS="section"><P>test</P></DIV><DIV CLASS="section"><UL><LI>list</LI><LI>inside</LI></UL></DIV><DIV CLASS="section"><BLOCKQUOTE><DIV CLASS="section"><P>inner blockquote</P></DIV></BLOCKQUOTE></DIV></BLOCKQUOTE></DIV></BODY></HTML>

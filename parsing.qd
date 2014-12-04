@@ -1,0 +1,119 @@
+@Title  : QuickDoc Parsing
+@Author : Jeffrey Massung
+@Date   : 2014.12.3
+
+= QuickDoc Parsing Strategies
+
+This is a tutorial about how the QuickDoc parser works so that it can be implemented in other languages as well. The strategies used here may be equally useful for those building parsers for other mark-up/down files as well, but QuickDoc is designed to not be ambiguous, and can therefore use an actual grammar instead of best-guess regular expression pattern matching.
+
+== Stages
+
+The QuickDoc parser is broken up into three parsing stages:
+
+* Header parsing.
+* Body parsing.
+* Paragraph parsing.
+
+Each of these has a completely different strategy that is used, but each is very simple.
+
+=== Header Parsing
+
+Parsing a header is simply a matter of peeking at the next character to be parsed and checking to see if it is an `@`. If it is, read the entire line, and extract and collect the key/value pair. If not, then the header is done being parsed and all the key/value pairs collected can be returned.
+
+=== Body Parsing
+
+This is the most difficult phase of parsing. It works because QuickDoc is designed to be "recursively" parsed (more on that in a bit). At a high-level, the body parsing strategy is:
+
+# Read the first line of the body.
+# Examine it to determine its type.
+# * If it is a "mergeable" type then...
+# * * Read the next line and examine its type.
+# * * If they are the same, merge their contents together, repeat.
+# * * If not, set the current line to the one just read.
+# * If it is not "mergeable" then advance and read the next line.
+# Goto step 2 and repeat until at the end of the file.
+
+Given the following example:
+
+: = Title
+:
+: Hello, **world!**
+: Bye.
+:
+: * This
+: * # Is a
+: * # test...
+
+There are a couple subtleties in there, but, when done you should have a list of "nodes" that might look something like this:
+
+: (:h1 "Title")
+: (:p "Hello, **world!**" "Bye.")
+: (:list "This" "# Is a" "# test...")
+
+A couple points to note:
+
+* Empty lines were not collected (but were used to terminated merging!)
+* The child list items weren't parsed either.
+
+However, the astute observer will notice that if you joined the lines of the `:list` node together, you could recursively parse them like a normal document body and get a new set of nodes that looked like this:
+
+: (:p "This")
+: (:enum "Is a" "test...")
+
+By doing so, and then recording those in the original nodes as children, we now have a complete document body:
+
+: (:h1 "Title")
+: (:p "Hello, **world!**" "Bye.")
+: (:list (:p "This") (:enum "Is a" "test..."))
+
+This would be repeated (recursively) for the `:enum` node, and once done we'd be ready to move onto the final parsing phase...
+
+=== Paragraph Parsing
+
+Once we have our tree of nodes, we can loop over them and - based on the type - decide which ones we're going to parse as paragraphs. Doing so merely involves tokenizing the text inside and then returning a list of parsed "spans" that indicate how to render them.
+
+Taking our paragraph (`:p`) node and parsing it, first it wold be tokenized into the following list of tokens:
+
+: (:text "Hello")
+: (:text ", ")
+: (:strong "**")
+: (:text "world!")
+: (:strong "**")
+: (:strong " Bye.")
+
+Finally, we could run that through our grammar and end up with the following nodes:
+
+: (:text "Hello")
+: (:text ", ")
+: (:strong (:text "world!"))
+: (:text " Byte.")
+
+These would then (like our list) be put back into the original node list:
+
+: (:h1 "Title")
+: (:p (:text "Hello") (:text ", ") (:strong (:text "world!")) (:text " Byte."))
+: (:list (:p "This") (:enum "Is a" "test..."))
+
+We would continue and apply paragraph parsing to all nodes in our tree as necessary. Our final tree might look something like this:
+
+: (:h1 "Title")
+: (:p (:text "Hello") (:text ", ") (:strong (:text "world!")) (:text " Byte."))
+: (:list (:p (:text "This")) (:enum (:p (:text "Is a")) (:p (:text "test..."))))
+
+And now we're ready to render the nodes as HTML.
+
+== Gotchya's
+
+* Not all node types are mergeable. In QuickDoc the mergeable node types are:
+* * Paragraphs
+* * Lists
+* * Blockquotes
+* * Pre-formatted blocks
+
+* Not all types are recursively parseable. For example:
+* * Headers cannot be parsed inside a lists or blockquotes.
+* * Lists can be inside blockquotes, but blockquotes cannot be in lists.
+* * Images cannot be inside lists.
+* * Pre-formatted text cannot be inside lists.
+
+* When rendering lists, don't forget that `:p` elements become `<LI>` tags.
