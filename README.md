@@ -4,7 +4,7 @@ The `quickdoc` package is a text markup implementation that is designed for simp
 
 The initial implementation is written in Common Lisp using [LispWorks](http://www.lispworks.com), but there's nothing about the QuickDoc markup that is specific to Lisp.
 
-To get a sense of what QuickDoc can do, check out the [example document](https://massung.github.io/quickdoc/example.html) created with it. And the source for the document is [here](https://raw.githubusercontent.com/massung/quickdoc/master/example.txt).
+To get a sense of what QuickDoc can do, check out the [example document](http://massung.github.io/quickdoc/example.html) created with it. And the source for the document is [here](https://raw.githubusercontent.com/massung/quickdoc/master/example.txt).
 
 ## Quickstart
 
