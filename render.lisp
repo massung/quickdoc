@@ -35,11 +35,9 @@
 
       ;; justified images
       (:img  `(:center ((:class "section"))
-               ,@(multiple-value-bind (url caption)
-                     (split-re #/\|/ (first (markup-node-text node)))
-                   `((:img ((:src ,(string-trim '(#\space #\tab) url))))
-                     ,@(when caption
-                         `((:div ((:class "caption")) ,(string-trim '(#\space #\tab) caption))))))))
+               ,@(multiple-value-bind (url cap)
+                     (split-re #/%s*\|%s*/ (first (markup-node-text node)))
+                   `((:img ((:src ,url))) ,@(when cap `((:div ((:class "caption")) ,cap)))))))
       
       ;; lists
       (:ul   `(:div ((:class "section")) (:ul () ,@child-spans)))

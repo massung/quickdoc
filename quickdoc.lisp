@@ -110,7 +110,7 @@
                                 doc
                               (setf (quickdoc-body doc) (parse-group #'(lambda () (read-line s nil nil))))))))))
 
-(defun parse-node (line &optional recursive-p list-p)
+(defun parse-node (line &optional recursive-p single-line-p)
   "Return a markup node given the start of a line of text."
   (when line
     (macrolet ((try (pattern &body body)
@@ -130,7 +130,7 @@
         (try "%-%-%-.*"   (values :hr (string-trim '(#\- #\space #\tab) $$))))
 
       ;; horizontal rules, blockquotes, pre's, and images cannot be in lists
-      (unless list-p
+      (unless single-line-p
       
         ;; blockquotes
         (try ">%s(.*)"    (values :bq $1))
@@ -141,7 +141,7 @@
         (try ":%s*$"      (values :pre ""))
 
         ;; images
-        (try "!%s(.*)"      (values :img $1)))
+        (try "!%s(.*)"    (values :img (string-trim '(#\space #\tab) $1))))
       
       ;; unordered and ordered list items
       (try "%*%s(.*)"     (values :ul $1))
@@ -174,9 +174,9 @@
        (let ((para (format nil "~{~a~^ ~}" text)))
          (parse 'span-parser (tokenize 'span-lexer para)))))))
 
-(defun parse-group (next-line &optional recursive-p list-p)
+(defun parse-group (next-line &optional recursive-p single-line-p)
   "Given a group of lines in the same section, parse them into nodes."
-  (loop with node = (parse-node (funcall next-line) recursive-p list-p)
+  (loop with node = (parse-node (funcall next-line) recursive-p single-line-p)
         while node
         
         ;; get each node, ignore empty lines
@@ -189,7 +189,7 @@
                      (loop with tail = (markup-node-text node)
                            
                            ;; read subsequent lines from the source
-                           for next = (parse-node (funcall next-line) recursive-p list-p)
+                           for next = (parse-node (funcall next-line) recursive-p single-line-p)
                            
                            ;; merge if the classes are the same
                            while (and next (eq (markup-node-class next)
@@ -204,4 +204,4 @@
                                              (setf node next))))
                    (prog1
                        (parse-spans node)
-                     (setf node (parse-node (funcall next-line) recursive-p list-p)))))))
+                     (setf node (parse-node (funcall next-line) recursive-p single-line-p)))))))
