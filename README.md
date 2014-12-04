@@ -6,6 +6,8 @@ The initial implementation is written in Common Lisp using [LispWorks](http://ww
 
 To get a sense of what QuickDoc can do, check out the [example document](http://massung.github.io/quickdoc/example.html) created with it. And the source for the document is [here](https://raw.githubusercontent.com/massung/quickdoc/master/example.txt).
 
+If you're interested in the parsing strategy to write your own QuickDoc parser (or maybe it will help you in writing a parser for another markup style), see the [QuickDoc Parsing Strategies](http://massung.github.io/quickdoc/parsing.html) document.
+
 ## Quickstart
 
 The `quickdoc` package has three main functions:
