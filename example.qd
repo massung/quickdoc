@@ -175,11 +175,9 @@ A horizontal rule can be placed anywhere by beginning a line with `---`.
 
 Text can optionally follow the `---`, which the renderer may use to create a horizontal rule with text inside it.
 
-: --- This is a rule with text in it. ---
+: --- That's all folks! ---
 
---- This is a rule with text in it. ---
-
-== That's it!
+--- That's all folks!---
 
 That's all there is to it.
 
