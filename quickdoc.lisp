@@ -238,18 +238,20 @@
                   ;; get the text for this cell
                   (text (slot-value cell 'text))
 
+                  ;; last character index
+                  (n (1- (length text)))
+
                   ;; is there whitespace on the left and/or right?
                   (lsp (and (plusp (length text)) (whitespace-char-p (char text 0))))
-                  (rsp (and (plusp (length text)) (whitespace-char-p (char text (1- (length text))))))
+                  (rsp (and (plusp (length text)) (whitespace-char-p (char text n))))
 
                   ;; determine the alignment of the cell
                   (align (cond ((and (not lsp) rsp) :left)
                                ((and (not rsp) lsp) :right)
                                (t                   :center))))
 
-             ;; return the cell and set the alignment
-             (prog1 cell
-               (setf (slot-value cell 'align) align)))))
+             ;; set the alignment and return the cell
+             (prog1 cell (setf (slot-value cell 'align) align)))))
 
     ;; loop over all the rows, split into cells, and create
     (loop for row in (markup-node-text node)
