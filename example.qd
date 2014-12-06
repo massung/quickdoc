@@ -1,7 +1,6 @@
 @Title       : QuickDoc Example
 @Author      : Jeff Massung
 @Date        : 2014.12.2
-@Stylesheet  : default.css
 @Description : An example of everything QuickDoc can do in one place.
 
 = QuickDoc Example
@@ -31,7 +30,7 @@ The meta comments are case-insensitive, so `@title`, `@TITLE`, and `@Title` will
 
 == Body Formatting Rules
 
-QuickDoc is like most markdown formats. However, it subscribes to the notion that less is more and allows for much prettier output. It allows for ATX-style headings, paragraphs, blockquotes, links, images, bullet lists, and pre-formatted blocks. And many of these can be embedded recursively.
+QuickDoc is like most markdown formats. However, it subscribes to the notion that less is more and allows for much prettier output. It allows for ATX-style headings, paragraphs, blockquotes, links, images, bullet lists, tables, and pre-formatted blocks. And many of these can be embedded recursively.
 
 === Headings
 
@@ -55,9 +54,17 @@ Any line that isn't formatted with a pre-defined style at the start is considere
 * Use `[[links]]` to create [[links]].
 * Use `\`pre-formatted text`\` to start and stop `pre-formatted text`.
 
-Any character can be escaped (to prevent formatting) with the `\\` character.
+Emphasis can **__be nested__**, but you can't nest recursively.
 
-Emphasis can **__be nested__**, but you can't nest bold or italics recursively within itself; it will terminate as opposed to beginning an inner span.
+Any character can be escaped (to prevent formatting) with the `\\` character. If the last line of a paragraph is `\\` then a hard `<BR>` is inserted.
+
+: The White House\
+: 1600 Pennsylvania Avenue NW\
+: Washington, DC 20500
+
+The White House\
+1600 Pennsylvania Avenue NW\
+Washington, DC 20500
 
 The following special unicode characters are also supported:
 
@@ -120,14 +127,30 @@ Any line beginning with `>` followed by a space will begin a blockquote. Like li
 > nulla pariatur. Excepteur sint occaecat cupidatat non proident,
 > sunt in culpa qui officia deserunt mollit anim id est laborum.
 
+=== Tables
+
+If a line begins with a single `|` followed by a space, it is considered to be a table row. Each cell in the row is terminated by the next `|`. If a cell begins with an `=` then it is a header. Cells can also be aligned by adding whitespace to either the beginning or the end of a cell.
+
+: |= Centered Heading |=  Right-aligned Heading|
+: |Left aligned       |        Centered        |
+: |      Right aligned|**Also centered**|
+: | [[centered link]] |  equation: y=x^^2^^    |
+
+|= Centered Heading |=  Right-aligned Heading|
+|Left aligned       |        Centered        |
+|      Right aligned|**Also centered**|
+| [[centered link]] |  equation: y=x^^2^^    |
+
+__Note: the ending `|` for each row is optional, and zero-length cells (`||`) are ignored.__
+
 === Pre-formatted Text
 
 If you want to display entire lines of pre-formatted text, begin the line with `:` followed by a space. As with all other groups, they will coalesce until reaching an empty line or non pre-formatted line.
 
-: // Here is some sample pre-formatted text:
+: // Here is some sample pre-formatted text.
 :
-: void main() {
-:     print("Hello, world!\n");
+: void __say_hi__() {
+:     print("Hello, **world!**\n");
 : }
 
 : This section is separated from the one above by an empty line.
@@ -155,20 +178,6 @@ Text can optionally follow the `---`, which the renderer may use to create a hor
 : --- This is a rule with text in it. ---
 
 --- This is a rule with text in it. ---
-
-== Possible Future Features
-
-Above all else, the goals of QuickDoc are to be...
-
-# ...extremely terse, simple, and easy (and unambiguous) to parse.
-# ...easy to generate clean HTML that is aesthetically pleasing.
-# ...able to render outside of HTML (e.g. graphically).
-
-Without compromising the above, these features are being considered (in no particular order):
-
-* Word definitions (`<dl>`, `<dt>`, and `<dd>` tags).
-* Table of contents generation.
-* Underlining.
 
 == That's it!
 

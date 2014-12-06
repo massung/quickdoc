@@ -21,66 +21,69 @@
 
 (deflexer span-lexer
 
+  ;; newlines are hard breaks
+  ("\\%n+"              (values :br))
+
   ;; escaped characters
-  ("\\(.)"            (values :text $1))
+  ("\\(.)"              (values :text $1))
 
   ;; teletype formatting
-  ("`"                (push-lexer 'tt-lexer :+tt))
+  ("`"                  (push-lexer 'tt-lexer :+tt))
 
   ;; special symbols
-  ("%(tm%)"           (values :text #\u+2122))
-  ("%(R%)"            (values :text #\u+00ae))
-  ("%(C%)"            (values :text #\u+00a9))
-  ("%(1/4%)"          (values :text #\u+00bc))
-  ("%(1/2%)"          (values :text #\u+00bd))
-  ("%(3/4%)"          (values :text #\u+00be))
-  ("%(o%)"            (values :text #\u+00b0))
-  ("%(%+/%-%)"        (values :text #\u+00b1))
+  ("%(tm%)"             (values :text #\u+2122))
+  ("%(R%)"              (values :text #\u+00ae))
+  ("%(C%)"              (values :text #\u+00a9))
+  ("%(1/4%)"            (values :text #\u+00bc))
+  ("%(1/2%)"            (values :text #\u+00bd))
+  ("%(3/4%)"            (values :text #\u+00be))
+  ("%(o%)"              (values :text #\u+00b0))
+  ("%(%+/%-%)"          (values :text #\u+00b1))
 
   ;; emphasis
-  ("%*%*"             (values :strong))
-  ("__"               (values :em))
-  ("%^%^"             (values :superscript))
-  (",,"               (values :subscript))
+  ("%*%*"               (values :strong))
+  ("__"                 (values :em))
+  ("%^%^"               (values :superscript))
+  (",,"                 (values :subscript))
 
   ;; links
-  ("%[%["             (push-lexer 'link-lexer :+link))
+  ("%[%["               (push-lexer 'link-lexer :+link))
 
   ;; non-terminal characters
-  (".[^%[%(%*_`%^,]*" (values :text $$)))
+  (".[^\\%[%(%*_`%^,]*" (values :text $$)))
 
 (deflexer tt-lexer
 
   ;; end of stream or teletype
-  ("$"                (pop-lexer :-tt))
-  ("`"                (pop-lexer :-tt))
+  ("$"                  (pop-lexer :-tt))
+  ("`"                  (pop-lexer :-tt))
 
   ;; escaped characters
-  ("\\(.)"            (values :chars $1))
+  ("\\(.)"              (values :chars $1))
 
   ;; everything else is just characters
-  (".[^`]*"           (values :chars $$)))
+  (".[^`]*"             (values :chars $$)))
 
 (deflexer link-lexer
           
   ;; end of stream, line, or link
-  ("$"                (pop-lexer :-link))
-  ("%]%]"             (pop-lexer :-link))
+  ("$"                  (pop-lexer :-link))
+  ("%]%]"               (pop-lexer :-link))
 
   ;; alternate text
-  ("|"                (swap-lexer 'alt-lexer :alt))
+  ("|"                  (swap-lexer 'alt-lexer :alt))
   
   ;; everything else is the link
-  (".[^|%]]*"         (values :url $$)))
+  (".[^|%]]*"           (values :url $$)))
 
 (deflexer alt-lexer
 
   ;; end of stream, line, or link
-  ("$"                (pop-lexer :-link))
-  ("%]%]"             (pop-lexer :-link))
+  ("$"                  (pop-lexer :-link))
+  ("%]%]"               (pop-lexer :-link))
 
   ;; everything else is the alternate text
-  (".[^%]]*"          (values :text $$)))
+  (".[^%]]*"            (values :text $$)))
 
 (defparser span-parser
   ((start p) $1)
@@ -97,9 +100,14 @@
   ((span sub) $1)
 
   ;; content spans
+  ((e br) $1)
   ((e text) $1)
   ((e tt) $1)
   ((e link) $1)
+
+  ;; hard breaks
+  ((br :br)
+   (make-br-node))
 
   ;; plain text
   ((text :text)

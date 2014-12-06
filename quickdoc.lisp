@@ -36,18 +36,21 @@
 
 (defstruct markup-node      "Top-level node." class text spans)
 (defstruct text-node        "Encoded plain text." text)
+(defstruct br-node          "Hard break.")
 (defstruct tt-node          "Monospace text." text)
 (defstruct link-node        "Link." url alt)
 (defstruct strong-node      "Strong text." spans)
 (defstruct em-node          "Emphasized text." spans)
 (defstruct superscript-node "Superscript text." spans)
 (defstruct subscript-node   "Subscript text." spans)
+(defstruct th-node          "Table header." text align)
+(defstruct td-node          "Table data." text spans align)
 
 (defparameter *p-class* :p
   "Default markup-node-class to use for paragraphs.")
 
 (eval-when (:compile-toplevel :execute)
-  (defparameter *default-css* (slurp (merge-pathnames #p"default.css" *compile-file-pathname*))
+  (defconstant +default-css+ #.(slurp (merge-pathnames #p"default.css" *compile-file-pathname*))
     "The default CSS to use for rendered markup."))
 
 (defun compile-quickdoc (source &optional target)
@@ -74,7 +77,7 @@
                   ;; link to the stylesheet to use if present or embed the default
                   ,(if-let (ss (quickdoc-style doc))
                        `(:link ((:rel "stylesheet") (:href ,ss) (:type "text/css")))
-                     `(:style () ,*default-css*))
+                     `(:style () ,+default-css+))
                   
                   ;; add all the meta information to the document
                   ,@(loop for (key value) in (quickdoc-head doc)
@@ -113,9 +116,9 @@
                       ;; return the final document
                       (return doc))))))
 
-(defun parse-node (line &optional recursive-p single-line-p)
+(defun parse-node (next-line &optional recursive-p single-line-p)
   "Return a markup node given the start of a line of text."
-  (when line
+  (when-let (line (funcall next-line))
     (macrolet ((try (pattern &body body)
                  (let ((m (gensym)))
                    `(with-re-match (,m (match-re ,(compile-re pattern) line))
@@ -133,7 +136,7 @@
         ;; horizontal rule
         (try "%-%-%-.*"   (values :hr (string-trim '(#\- #\space #\tab) $$))))
 
-      ;; horizontal rules, blockquotes, pre's, and images cannot be in lists
+      ;; horizontal rules, blockquotes, pre's, images, and tasks cannot be in lists
       (unless single-line-p
       
         ;; blockquotes
@@ -145,7 +148,10 @@
         (try ":%s*$"      (values :pre ""))
 
         ;; images
-        (try "!%s(.*)"    (values :img (string-trim '(#\space #\tab) $1))))
+        (try "!%s(.*)"    (values :img (string-trim '(#\space #\tab) $1)))
+
+        ;; tables
+        (try "|(.*)"      (values :table $$)))
       
       ;; unordered and ordered list items
       (try "%*%s(.*)"     (values :ul $1))
@@ -168,19 +174,31 @@
        (let ((*p-class* :p))
          (parse-group #'(lambda () (pop text)) t)))
     
-      ;; lists
+      ;; lists :dl
       ((:ul :ol)
        (let ((*p-class* :li))
          (parse-group #'(lambda () (pop text)) t t)))
+
+      ;; multi-line tables
+      ((:table)
+       (parse-table node))
+
+      ;; headings aren't marked up
+      ((:h1 :h2 :h3 :h4)
+       (mapcar #'(lambda (s) (make-text-node :text s)) text))
+
+      ;; list items can't merge, so just render them
+      ((:li)
+       (parse 'span-parser (tokenize 'span-lexer (first text))))
     
-      ;; paragraphs, captions, list items, and headings
-      ((:p :li :h1 :h2 :h3 :h4)
-       (let ((para (format nil "~{~a~^ ~}" text)))
+      ;; everything else is plain text and joined by newlines
+      (otherwise
+       (let ((para (format nil "~{~a~^~%~}" text)))
          (parse 'span-parser (tokenize 'span-lexer para)))))))
 
 (defun parse-group (next-line &optional recursive-p single-line-p)
   "Given a group of lines in the same section, parse them into nodes."
-  (loop with node = (parse-node (funcall next-line) recursive-p single-line-p)
+  (loop with node = (parse-node next-line recursive-p single-line-p)
         while node
         
         ;; get each node, ignore empty lines
@@ -189,11 +207,11 @@
         
         ;; merge node group text together
         do (setf (markup-node-spans node)
-                 (if (find (markup-node-class node) '(:p :ol :ul :bq :pre))
+                 (if (find (markup-node-class node) '(:p :ol :ul :table :bq :pre))
                      (loop with tail = (markup-node-text node)
                            
                            ;; read subsequent lines from the source
-                           for next = (parse-node (funcall next-line) recursive-p single-line-p)
+                           for next = (parse-node next-line recursive-p single-line-p)
                            
                            ;; merge if the classes are the same
                            while (and next (eq (markup-node-class next)
@@ -208,4 +226,37 @@
                                              (setf node next))))
                    (prog1
                        (parse-spans node)
-                     (setf node (parse-node (funcall next-line) recursive-p single-line-p)))))))
+                     (setf node (parse-node next-line recursive-p single-line-p)))))))
+
+(defun parse-table (node)
+  "Create headers and data cells from each row."
+  (flet ((make-cell (s)
+           (let* ((cell (if (char= #\= (char s 0))
+                            (make-th-node :text (subseq s 1))
+                          (make-td-node :text s :spans (parse 'span-parser (tokenize 'span-lexer s)))))
+
+                  ;; get the text for this cell
+                  (text (slot-value cell 'text))
+
+                  ;; is there whitespace on the left and/or right?
+                  (lsp (and (plusp (length text)) (whitespace-char-p (char text 0))))
+                  (rsp (and (plusp (length text)) (whitespace-char-p (char text (1- (length text))))))
+
+                  ;; determine the alignment of the cell
+                  (align (cond ((and (not lsp) rsp) :left)
+                               ((and (not rsp) lsp) :right)
+                               (t                   :center))))
+
+             ;; return the cell and set the alignment
+             (prog1 cell
+               (setf (slot-value cell 'align) align)))))
+
+    ;; loop over all the rows, split into cells, and create
+    (loop for row in (markup-node-text node)
+
+          ;; split the row into cells, ignore empty ones
+          for cells = (split-sequence "|" row :coalesce-separators t)
+
+          ;; make a cell for each one
+          collect (mapcar #'make-cell cells))))
+
