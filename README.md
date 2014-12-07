@@ -1,10 +1,10 @@
 # QuickDoc
 
-The `quickdoc` package is a text markup implementation that is designed for simplicity, unambiguity, and to be aesthetically pleasing when rendered. It steals mostly from [Creole](http://www.wikicreole.org/) and [MakeDoc](http://www.rebol.net/docs/makedoc.html), but also adds features that I've wanted in various markup implementations and removes things as well.
+The `quickdoc` package is a text markup implementation that is designed for simplicity, unambiguity, and to be aesthetically pleasing when rendered. It steals mostly from [Creole](http://www.wikicreole.org/) and [MakeDoc](http://www.rebol.net/docs/makedoc.html), but also adds features that I've wanted (e.g. CSV table parsing) and removes things as well.
 
 The initial implementation is written in Common Lisp using [LispWorks](http://www.lispworks.com), but there's nothing about the QuickDoc markup that is specific to Lisp.
 
-To get a sense of what QuickDoc can do, check out the [example document](http://massung.github.io/quickdoc/example.html) created with it. And the source for the document is [here](https://raw.githubusercontent.com/massung/quickdoc/master/example.txt).
+To get a sense of what QuickDoc can do, check out the [example document](http://massung.github.io/quickdoc/example.html) created with it. And the source for the document is [here](https://raw.githubusercontent.com/massung/quickdoc/master/example.qd).
 
 If you're interested in the parsing strategy to write your own QuickDoc parser (or maybe it will help you in writing a parser for another markup style), see the [QuickDoc Parsing Strategies](http://massung.github.io/quickdoc/parsing.html) document.
 
