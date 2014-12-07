@@ -25,37 +25,51 @@
     (case (markup-node-class node)
       
       ;; headings
-      (:h1    `(:h1 () ,@child-spans))
-      (:h2    `(:h2 () ,@child-spans))
-      (:h3    `(:h3 () ,@child-spans))
-      (:h4    `(:h4 () ,@child-spans))
+      (:h1    `(:h1 ((:style "clear:both")) ,@child-spans))
+      (:h2    `(:h2 ((:style "clear:both")) ,@child-spans))
+      (:h3    `(:h3 ((:style "clear:both")) ,@child-spans))
+      (:h4    `(:h4 ((:style "clear:both")) ,@child-spans))
 
       ;; paragraphs and blockquotes
       (:p     `(:p () ,@child-spans))
-      (:bq    `(:blockquote () ,@child-spans))
+      (:bq    `(:blockquote ((:style "clear:both")) ,@child-spans))
 
-      ;; justified images
-      (:img   `(:center () ,@(multiple-value-bind (url cap)
-                                (split-re #/%s*\|%s*/ (first (markup-node-text node)))
-                              `((:img ((:src ,url))) ,@(when cap `((:div ((:class "caption")) ,cap)))))))
+      ;; centered image
+      (:img=  `(:div ()
+                (:center () ,@(multiple-value-bind (url cap)
+                                  (split-re #/%s*\|%s*/ (first (markup-node-text node)))
+                                `((:img ((:src ,url)))
+                                  ,@(when cap `((:div ((:class "caption")) ,cap))))))))
+
+      ;; left-justified image
+      (:img<  `(:div ((:class "left"))
+                (:center () ,@(multiple-value-bind (url cap)
+                                  (split-re #/%s*\|%s*/ (first (markup-node-text node)))
+                                `((:img ((:src ,url)))
+                                  ,@(when cap `((:div ((:class "caption")) ,cap))))))))
+
+      ;; right-justified image
+      (:img>  `(:div ((:class "right"))
+                (:center () ,@(multiple-value-bind (url cap)
+                                  (split-re #/%s*\|%s*/ (first (markup-node-text node)))
+                                `((:img ((:src ,url)))
+                                  ,@(when cap `((:div ((:class "caption")) ,cap))))))))
 
       ;; task definition list
-      (:table `(:center ()
-                (:table ((:rules "all") (:frame "box"))
-                 (:tbody ()
-                  ,@(loop for row in (markup-node-spans node)
-                          collect `(:tr () ,@(mapcar #'render-node row)))))))
+      (:table `(:table ((:style "clear:both") (:rules "all") (:frame "box"))
+                (:tbody ()
+                 ,@(mapcar #'(lambda (r) `(:tr () ,@(mapcar #'render-node r))) (markup-node-spans node)))))
       
       ;; lists
-      (:ul    `(:ul () ,@child-spans))
-      (:ol    `(:ol () ,@child-spans))
+      (:ul    `(:ul ((:style "clear:both")) ,@child-spans))
+      (:ol    `(:ol ((:style "clear:both")) ,@child-spans))
 
       ;; list items
       (:li    `(:li () ,@child-spans))
       
       ;; horizontal rules
       (:hr    (if (plusp (length (first (markup-node-text node))))
-                  `(:center ()
+                  `(:center ((:style "clear:both"))
                     (:table ((:style "width:100%;margin:0;padding:0;margin-left:auto;margin-right:auto;border:0")
                              (:cellspacing 0)
                              (:cellpadding 0))
@@ -67,7 +81,7 @@
                 `(:hr)))
 
       ;; pre-formatted text
-      (:pre   `(:pre () ,(format nil "~{~a~%~}" (markup-node-text node)))))))
+      (:pre   `(:pre ((:style "clear:both")) ,(format nil "~{~a~%~}" (markup-node-text node)))))))
 
 (defmethod render-node ((node text-node))
   "Render a simple text node."
@@ -103,8 +117,8 @@
 
 (defmethod render-node ((node th-node))
   "Render a definition list node."
-  `(:th ((:valign "top") (:align ,(th-node-align node))) ,(th-node-text node)))
+  `(:th ((:valign "top") (:align "left")) ,(th-node-text node)))
 
 (defmethod render-node ((node td-node))
   "Render a table cell node."
-  `(:td ((:valign "top") (:align ,(td-node-align node))) ,@(mapcar #'render-node (td-node-spans node))))
+  `(:td ((:valign "top") (:align "left")) ,@(mapcar #'render-node (td-node-spans node))))

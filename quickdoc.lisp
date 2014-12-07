@@ -18,7 +18,7 @@
 ;;;;
 
 (defpackage :quickdoc
-  (:use :cl :lw :capi :re :lexer :parsergen :html)
+  (:use :cl :lw :capi :re :lexer :csv :parsergen :html)
   (:nicknames :qd)
   (:export
    #:parse-quickdoc
@@ -43,14 +43,14 @@
 (defstruct em-node          "Emphasized text." spans)
 (defstruct superscript-node "Superscript text." spans)
 (defstruct subscript-node   "Subscript text." spans)
-(defstruct th-node          "Table header." text align)
-(defstruct td-node          "Table data." text spans align)
+(defstruct th-node          "Table header." text)
+(defstruct td-node          "Table data." text spans)
 
 (defparameter *p-class* :p
   "Default markup-node-class to use for paragraphs.")
 
 (eval-when (:compile-toplevel :execute)
-  (defconstant +default-css+ #.(slurp (merge-pathnames #p"default.css" *compile-file-pathname*))
+  (defconstant +quickdoc-css+ #.(slurp (merge-pathnames #p"quickdoc.css" *compile-file-pathname*))
     "The default CSS to use for rendered markup."))
 
 (defun compile-quickdoc (source &optional target)
@@ -77,7 +77,7 @@
                   ;; link to the stylesheet to use if present or embed the default
                   ,(if-let (ss (quickdoc-style doc))
                        `(:link ((:rel "stylesheet") (:href ,ss) (:type "text/css")))
-                     `(:style () ,+default-css+))
+                     `(:style () ,+quickdoc-css+))
                   
                   ;; add all the meta information to the document
                   ,@(loop for (key value) in (quickdoc-head doc)
@@ -148,10 +148,12 @@
         (try ":%s*$"      (values :pre ""))
 
         ;; images
-        (try "!%s(.*)"    (values :img (string-trim '(#\space #\tab) $1)))
+        (try "!<%s(.*)"   (values :img< (string-trim '(#\space #\tab) $1)))
+        (try "!>%s(.*)"   (values :img> (string-trim '(#\space #\tab) $1)))
+        (try "!%s(.*)"    (values :img= (string-trim '(#\space #\tab) $1)))
 
         ;; tables
-        (try "|(.*)"      (values :table $$)))
+        (try "|%s(.*)"    (values :table $1)))
       
       ;; unordered and ordered list items
       (try "%*%s(.*)"     (values :ul $1))
@@ -230,35 +232,15 @@
 
 (defun parse-table (node)
   "Create headers and data cells from each row."
-  (flet ((make-cell (s)
-           (let* ((cell (if (char= #\= (char s 0))
-                            (make-th-node :text (subseq s 1))
-                          (make-td-node :text s :spans (parse 'span-parser (tokenize 'span-lexer s)))))
+  (flet ((make-cell (cell) (make-td-node :text cell :spans (parse 'span-parser (tokenize 'span-lexer cell))))
+         (make-header (cell) (make-th-node :text cell)))
+    (loop with records = (mapcar #'parse-csv (markup-node-text node))
 
-                  ;; get the text for this cell
-                  (text (slot-value cell 'text))
+          ;; the first record is the header
+          with header = (mapcar #'make-header (first (pop records)))
 
-                  ;; last character index
-                  (n (1- (length text)))
+          ;; every other record is a list of cells
+          while records collect (mapcar #'make-cell (first (pop records))) into cells
 
-                  ;; is there whitespace on the left and/or right?
-                  (lsp (and (plusp (length text)) (whitespace-char-p (char text 0))))
-                  (rsp (and (plusp (length text)) (whitespace-char-p (char text n))))
-
-                  ;; determine the alignment of the cell
-                  (align (cond ((and (not lsp) rsp) :left)
-                               ((and (not rsp) lsp) :right)
-                               (t                   :center))))
-
-             ;; set the alignment and return the cell
-             (prog1 cell (setf (slot-value cell 'align) align)))))
-
-    ;; loop over all the rows, split into cells, and create
-    (loop for row in (markup-node-text node)
-
-          ;; split the row into cells, ignore empty ones
-          for cells = (split-sequence "|" row :coalesce-separators t)
-
-          ;; make a cell for each one
-          collect (mapcar #'make-cell cells))))
-
+          ;; return the header and cells
+          finally (return (cons header cells)))))

@@ -2,6 +2,7 @@
 @Author      : Jeff Massung
 @Date        : 2014.12.2
 @Description : An example of everything QuickDoc can do in one place.
+@Stylesheet  : quickdoc.css
 
 = QuickDoc Example
 
@@ -129,19 +130,17 @@ Any line beginning with `>` followed by a space will begin a blockquote. Like li
 
 === Tables
 
-If a line begins with a single `|` followed by a space, it is considered to be a table row. Each cell in the row is terminated by the next `|`. If a cell begins with an `=` then it is a header. Cells can also be aligned by adding whitespace to either the beginning or the end of a cell.
+If a line begins with a single `|` followed by a space, it is considered to be a CSV table record. The record is parsed according to [[https://tools.ietf.org/html/rfc4180|RFC 4180]] and displayed. The very first record in a table is assumed to be the header row.
 
-: |= Centered Heading |=  Right-aligned Heading|
-: |Left aligned       |        Centered        |
-: |      Right aligned|**Also centered**|
-: | [[centered link]] |  equation: y=x^^2^^    |
+: | Name, Age, Gender, Relation
+: | "Massung, Jeffrey", 37, M, Father
+: | "Massung, Isabel", 5, F, Daughter
 
-|= Centered Heading |=  Right-aligned Heading|
-|Left aligned       |        Centered        |
-|      Right aligned|**Also centered**|
-| [[centered link]] |  equation: y=x^^2^^    |
+| Name, Age, Gender, Relation
+| "Massung, Jeffrey", 37, M, Father
+| "Massung, Isabel", 5, F, Daughter
 
-__Note: the ending `|` for each row is optional, and zero-length cells (`||`) are ignored.__
+Table data cells are parsed for markup. Header cells are left as plain text.
 
 === Pre-formatted Text
 
@@ -153,27 +152,21 @@ If you want to display entire lines of pre-formatted text, begin the line with `
 :     print("Hello, **world!**\n");
 : }
 
-: This section is separated from the one above by an empty line.
-
 === Images
 
 Images are not ever embedded into paragraphs. They are always on a line of their own for simplicity and ease of reading. Any line that begins with a `!` followed by a space will be an image where the rest of the line is the address of the image to display.
 
 You can insert a caption for the image by using a `|` after the URL for the image. Any text after the `|` will be used as the caption.
 
-: ! http://imgs.xkcd.com/comics/lisp_cycles.png | A funny Lisp comic
+: !> http://imgs.xkcd.com/comics/lisp_cycles.png | A funny Lisp comic
 
-! http://imgs.xkcd.com/comics/lisp_cycles.png | A funny Lisp comic
+!> http://imgs.xkcd.com/comics/lisp_cycles.png | A funny Lisp comic
 
-While there is no method of specifying the size of the image to display, the CSS for the HTML rendering is allowed to set the max-height of the image to something reasonable (240px is recommended).
+While there is no method of specifying the size of the image to display, the CSS for the HTML rendering is allowed to set the max-height of centered images to something reasonable (240px is recommended) and a maximum width for left- and right-justified images.
 
 === Horizontal Rules
 
-A horizontal rule can be placed anywhere by beginning a line with `---`.
-
----
-
-Text can optionally follow the `---`, which the renderer may use to create a horizontal rule with text inside it.
+A horizontal rule can be placed anywhere by beginning a line with `---`. Text can optionally follow the `---`, which the renderer may use to create a horizontal rule with text inside it.
 
 : --- That's all folks! ---
 
