@@ -154,9 +154,7 @@ If you want to display entire lines of pre-formatted text, begin the line with `
 
 === Images
 
-Images are not ever embedded into paragraphs. They are always on a line of their own for simplicity and ease of reading. Any line that begins with a `!` followed by a space will be an image where the rest of the line is the address of the image to display.
-
-You can insert a caption for the image by using a `|` after the URL for the image. Any text after the `|` will be used as the caption.
+Images are not ever embedded into paragraphs. They are on a line of their own, and centered. Any line that begins with a `!` followed by a space will be an image where the rest of the line is the address of the image to display. Using `!<` or `!>` will align the image to the left and right of any text following it. You can insert a caption for the image by using a `|` after the URL for the image. Any text after the `|` will be used as the caption.
 
 : !> http://imgs.xkcd.com/comics/lisp_cycles.png | A funny Lisp comic
 
