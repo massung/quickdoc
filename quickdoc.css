@@ -1,6 +1,6 @@
 
 /* default */
-body { margin: 20px 40px; color: #333333; font-family: "gill sans"; font-weight: lighter; font-size: 14pt; line-height: 1.5em; }
+body { margin: 20px 40px; color: #333333; font-family: "gill sans", "helvetica", sans-serif; font-weight: lighter; font-size: 14pt; line-height: 1.5em; }
 
 /* headings */
 h1 { font-size: 22pt; font-weight: bold; color: #000000; }
