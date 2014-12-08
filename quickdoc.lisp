@@ -28,10 +28,8 @@
 (in-package :quickdoc)
 
 (defclass quickdoc ()
-  ((title :initform nil :accessor quickdoc-title)
-   (style :initform nil :accessor quickdoc-style)
-   (head  :initform nil :accessor quickdoc-head)
-   (body  :initform nil :accessor quickdoc-body))
+  ((head :initform nil :accessor quickdoc-head)
+   (body :initform nil :accessor quickdoc-body))
   (:documentation "Document object holding all parsed nodes and meta comment tags."))
 
 (defstruct markup-node      "Top-level node." class text spans)
@@ -66,23 +64,24 @@
 
 (defun render-quickdoc (doc &optional stream)
   "Return a list of HTML objects for a list of nodes."
-  (let* ((title (or (quickdoc-title doc) "Untitled QuickDoc"))
-         (html `(:html ()
-                 (:head ()
-                  (:meta ((:http-equiv "Content-Type") (:content "text/html") (:charset "UTF-8")))
-                  
-                  ;; set the title and embed the stylesheet
-                  (:title () ,title)
-                  
-                  ;; link to the stylesheet to use if present or embed the default
-                  ,(if-let (ss (quickdoc-style doc))
-                       `(:link ((:rel "stylesheet") (:href ,ss) (:type "text/css")))
-                     `(:style () ,+quickdoc-css+))
-                  
-                  ;; add all the meta information to the document
-                  ,@(loop for (key value) in (quickdoc-head doc)
-                          collect `(:meta ((:name ,key) (:content ,value)))))
-                 (:body () ,@(mapcar 'render-node (quickdoc-body doc))))))
+  (let ((html `(:html ()
+                (:head ()
+                 (:meta ((:http-equiv "Content-Type") (:content "text/html") (:charset "UTF-8")))
+                 
+                 ;; loop over all head data and write it out
+                 ,@(loop for (name content) in (quickdoc-head doc)
+                         collect (cond ((string-equal name :title)
+                                        `(:title () ,content))
+                                       ((string-equal name :stylesheet)
+                                        `(:link ((:rel "stylesheet") (:href ,content) (:type "text/css"))))
+                                       ((string-equal name :font)
+                                        `(:style () ,(format nil "* { font-family: ~s }" content)))
+                                       
+                                       ;; anything else is meta data
+                                       (t `(:meta ((:name ,name) (:content ,content)))))))
+                
+                ;; the rest of the document
+                (:body () ,@(mapcar 'render-node (quickdoc-body doc))))))
     (html html stream)))
 
 (defun parse-quickdoc (string)
@@ -103,11 +102,7 @@
             
             ;; add the comment to the meta tags for the document
             when (plusp (length name))
-            do (cond ((string-equal name :title)      (setf (quickdoc-title doc) content))
-                     ((string-equal name :stylesheet) (setf (quickdoc-style doc) content))
-                     
-                     ;; everything else is a meta tag
-                     (t (push (list (string-downcase name) content) (quickdoc-head doc))))
+            do (push (list (string-downcase name) content) (quickdoc-head doc))
             
             ;; done, now read the body
             finally (progn

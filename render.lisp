@@ -42,14 +42,14 @@
                                   ,@(when cap `((:div ((:class "caption")) ,cap))))))))
 
       ;; left-justified image
-      (:img<  `(:div ((:class "left"))
+      (:img<  `(:div ((:class "left") (:style "float:left"))
                 (:center () ,@(multiple-value-bind (url cap)
                                   (split-re #/%s*\|%s*/ (first (markup-node-text node)))
                                 `((:img ((:src ,url)))
                                   ,@(when cap `((:div ((:class "caption")) ,cap))))))))
 
       ;; right-justified image
-      (:img>  `(:div ((:class "right"))
+      (:img>  `(:div ((:class "right") (:style "float:right"))
                 (:center () ,@(multiple-value-bind (url cap)
                                   (split-re #/%s*\|%s*/ (first (markup-node-text node)))
                                 `((:img ((:src ,url)))
