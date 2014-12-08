@@ -49,7 +49,7 @@
 (defparameter *p-class* :p
   "Default markup-node-class to use for paragraphs.")
 
-(eval-when (:compile-toplevel :execute)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (defconstant +quickdoc-css+ #.(slurp (merge-pathnames #p"quickdoc.css" *compile-file-pathname*))
     "The default CSS to use for rendered markup."))
 

@@ -6,7 +6,7 @@
 
 = QuickDoc Example
 
-This is a sample QuickDoc markup test. The source for this can be found on [[https://raw.githubusercontent.com/massung/quickdoc/master/example.txt|GitHub]]. It is a dead-simple and easily parsed wiki-style markup for [[http://www.listpworks.com|LispWorks]]. In addition to markup, it also supports meta tag information to be embedded in any generated HTML and custom stylesheeting.
+This is a sample QuickDoc markup test. The source for this can be found on [[https://raw.githubusercontent.com/massung/quickdoc/master/example.qd|GitHub]]. It is a dead-simple and easily parsed wiki-style markup for [[http://www.listpworks.com|LispWorks]]. In addition to markup, it also supports meta tag information to be embedded in any generated HTML and custom stylesheeting.
 
 == Document Header
 

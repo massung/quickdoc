@@ -35,7 +35,7 @@
       (:bq    `(:blockquote ((:style "clear:both")) ,@child-spans))
 
       ;; centered image
-      (:img=  `(:div ()
+      (:img=  `(:div ((:style "clear:both"))
                 (:center () ,@(multiple-value-bind (url cap)
                                   (split-re #/%s*\|%s*/ (first (markup-node-text node)))
                                 `((:img ((:src ,url)))
