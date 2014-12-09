@@ -2,7 +2,6 @@
 @Author      : Jeff Massung
 @Date        : 2014.12.2
 @Description : An example of everything QuickDoc can do in one place.
-@Stylesheet  : quickdoc.css
 
 = QuickDoc Example
 
@@ -22,13 +21,7 @@ The syntax for a meta comment is `<name> : <content>`. If no `:` is present sepa
 
 The first line in the document that does not begin with an `@` begins the actual document body and any other lines beginning with `@` from then will be treated as plain text.
 
-A few meta comments are special and can actually affect the visual style of the HTML that is generated:
-
-* `@title` will set the `<TITLE>` of the document.
-* `@stylesheet` will add a `<LINK>` to a given stylesheet.
-* `@font` will add a `<STYLE>` setting the `font-family` for `*`.
-
-The meta comments are case-insensitive, so `@title`, `@TITLE`, and `@Title` will all work, and meta keys will always be written out as lowercase.
+__If no `@title` tag is present the document is left untitled.__
 
 == Body Formatting Rules
 

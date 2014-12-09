@@ -28,8 +28,9 @@
 (in-package :quickdoc)
 
 (defclass quickdoc ()
-  ((head :initform nil :accessor quickdoc-head)
-   (body :initform nil :accessor quickdoc-body))
+  ((title :initform nil :accessor quickdoc-title)
+   (meta  :initform nil :accessor quickdoc-meta)
+   (body  :initform nil :accessor quickdoc-body))
   (:documentation "Document object holding all parsed nodes and meta comment tags."))
 
 (defstruct markup-node      "Top-level node." class text spans)
@@ -51,37 +52,36 @@
   (defconstant +quickdoc-css+ #.(slurp (merge-pathnames #p"quickdoc.css" *compile-file-pathname*))
     "The default CSS to use for rendered markup."))
 
-(defun compile-quickdoc (source &optional target)
-  "Read a QuickDoc source file and render it as HTML to a target file."
-  (unless target
-    (setf target (merge-pathnames (make-pathname :type "html") (pathname source))))
+(defun compile-quickdoc (source &rest render-args &key output-file &allow-other-keys)
+  "Read a QuickDoc source file and render it as HTML to a file."
+  (unless output-file
+    (setf output-file (merge-pathnames (make-pathname :type "html") (pathname source))))
 
-  ;; open the target file, parse the quickdoc, and render it
+  ;; parse the quickdoc file
   (when-let (doc (parse-quickdoc (slurp source)))
-    (prog1 doc
-      (with-open-file (s target :direction :output :if-exists :supersede)
-        (render-quickdoc doc s)))))
+    (prog1
+        doc
+      (with-open-file (stream output-file :direction :output :if-exists :supersede)
+        (apply 'render-quickdoc doc :stream stream render-args)))))
 
-(defun render-quickdoc (doc &optional stream)
-  "Return a list of HTML objects for a list of nodes."
+(defun render-quickdoc (doc &key stream title stylesheet &allow-other-keys)
+  "Return the HTML body and META tags for a document."
   (let ((html `(:html ()
                 (:head ()
-                 (:meta ((:http-equiv "Content-Type") (:content "text/html") (:charset "UTF-8")))
-                 
-                 ;; loop over all head data and write it out
-                 ,@(loop for (name content) in (quickdoc-head doc)
-                         collect (cond ((string-equal name :title)
-                                        `(:title () ,content))
-                                       ((string-equal name :stylesheet)
-                                        `(:link ((:rel "stylesheet") (:href ,content) (:type "text/css"))))
-                                       ((string-equal name :font)
-                                        `(:style () ,(format nil "* { font-family: ~s }" content)))
-                                       
-                                       ;; anything else is meta data
-                                       (t `(:meta ((:name ,name) (:content ,content)))))))
-                
-                ;; the rest of the document
+
+                 ;; set the title of the document
+                 ,@(when-let (s (or title (quickdoc-title doc))) `((:title () ,s)))
+
+                 ;; write a link or embed a stylesheet
+                 ,@(when stylesheet `((:link ((:rel "stylesheet") (:href ,stylesheet) (:type "text/css")))))
+
+                 ;; write the meta tags
+                 ,@(loop for (k v) in (quickdoc-meta doc) collect `(:meta ((:name ,k) (:content ,v)))))
+
+                ;; write the body
                 (:body () ,@(mapcar 'render-node (quickdoc-body doc))))))
+
+    ;; output the html to the stream
     (html html stream)))
 
 (defun parse-quickdoc (string)
@@ -102,7 +102,9 @@
             
             ;; add the comment to the meta tags for the document
             when (plusp (length name))
-            do (push (list (string-downcase name) content) (quickdoc-head doc))
+            do (if (string-equal name :title)
+                   (setf (quickdoc-title doc) content)
+                 (push (list (string-downcase name) content) (quickdoc-meta doc)))
             
             ;; done, now read the body
             finally (progn
