@@ -1,4 +1,7 @@
-* { font-family: "PT Sans", Helvetica, Arial, sans-serif; font-weight: lighter; font-size: 14pt; line-height: 1.5em; }
+@import url("http://fonts.googleapis.com/css?family=Open+Sans:400,300,700");
+
+/* Default font */
+* { font-family: "Open Sans", Helvetica, Arial, sans-serif; font-weight: lighter; font-size: 14pt; line-height: 1.5em; }
 
 /* color and margins */
 body { margin: 20px 40px; color: #515151; }
