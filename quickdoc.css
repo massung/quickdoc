@@ -1,16 +1,13 @@
-@import url("http://fonts.googleapis.com/css?family=Open+Sans:400,300,700");
-
-/* default font */
-* { font-family: "Open Sans", sans-serif; font-weight: lighter; font-size: 14pt; line-height: 1.5em; }
+* { font-family: "PT Sans", Helvetica, Arial, sans-serif; font-weight: lighter; font-size: 14pt; line-height: 1.5em; }
 
 /* color and margins */
-body { margin: 20px 40px; color: #333333; }
+body { margin: 20px 40px; color: #515151; }
 
 /* headings */
-h1 { font-size: 22pt; font-weight: bold; color: #000000; }
-h2 { font-size: 18pt; font-weight: bold; color: #000000; border-bottom: 1px solid #e0e0e0; }
-h3 { font-size: 16pt; font-weight: bold; color: #000000; }
-h4 { font-size: 14pt; font-weight: bold; color: #000000; }
+h1 { font-size: 28pt; font-weight: bold; }
+h2 { font-size: 22pt; font-weight: bold; border-bottom: 1px solid #e0e0e0; }
+h3 { font-size: 18pt; font-weight: bold; }
+h4 { font-size: 16pt; font-weight: bold; }
 
 /* horizontal rules */
 hr { height: 1px; width: 100%; line-height: 1px; background-color: #e0e0e0; border: none; }
@@ -19,8 +16,13 @@ hr { height: 1px; width: 100%; line-height: 1px; background-color: #e0e0e0; bord
 td.hr { padding: 0; font-style: italic; }
 
 /* monospace no-format */
-tt { font-family: monospace; background-color: #e8e8e8; padding-left: 2px; padding-right: 2px; font-weight: normal; font-style: normal; }
-pre { font-family: monospace; background-color: #e0e0e0; border: 1px solid #a0a0a0; padding: 16px; font-weight: normal; font-style: normal; line-height: 1.25em; }
+tt { font-family: "Courier New", monospace; background-color: #e8e8e8; padding-left: 2px; padding-right: 2px; font-weight: normal; font-style: normal; }
+pre { font-family: "Courier New", monospace; background-color: #e0e0e0; border: 1px solid #a0a0a0; padding: 16px; font-weight: normal; font-style: normal; line-height: 1.25em; }
+
+/* links */
+a { color: #268bd2; text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:visited { color: #268BD2; }
 
 /* images */
 img { max-width: 100%; max-height: 240px; max-width:100%; height: auto !important; }
