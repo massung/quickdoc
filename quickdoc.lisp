@@ -81,6 +81,9 @@
                 ;; write the body
                 (:body () ,@(mapcar 'render-node (quickdoc-body doc))))))
 
+    ;; make sure things will display properly in IE
+    (format stream "<!DOCTYPE HTML>")
+
     ;; output the html to the stream
     (html html stream)))
 
