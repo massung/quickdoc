@@ -47,7 +47,7 @@ Any line that isn't formatted with a pre-defined style at the start is considere
 * Use `^^` to begin and end ^^superscript^^ text.
 * Use `,,` to begin and end ,,subscript,, text.
 * Use `[[links]]` to create [[links]].
-* Use `\`pre-formatted text`\` to start and stop `pre-formatted text`.
+* Use `\`pre-formatted text\`` to start and stop `pre-formatted text`.
 
 Emphasis can **__be nested__**, but you can't nest recursively.
 
@@ -61,7 +61,7 @@ The White House\
 1600 Pennsylvania Avenue NW\
 Washington, DC 20500
 
-The following special unicode characters are also supported:
+Unicode characters (like \u2713) can be inserted using `\\uhhhh`, where 'hhhh' is a 4-digit hexadecimal value. The following unicode characters are also specially supported:
 
 * `(tm)` for (tm)
 * `(R)` for (R)
@@ -155,6 +155,14 @@ Images are not ever embedded into paragraphs. They are on a line of their own, a
 !> http://imgs.xkcd.com/comics/lisp_cycles.png | A funny Lisp comic
 
 While there is no method of specifying the size of the image to display, the CSS for the HTML rendering is allowed to set the max-height of centered images to something reasonable (240px is recommended) and a maximum width for left- and right-justified images.
+
+=== Videos
+
+Videos can be embedded with `!` as well. The URL must be a link to an embedded [[http://www.youtube.com|YouTube]] or [[http://www.vimeo.com|Vimeo]] video. Captioning and aligning all work the same as images. The QuickDoc parser will simply recognize that the URL is to one of those sites and embed it as such.
+
+: ! http://player.vimeo.com/video/106786265 | Envoy
+
+! http://player.vimeo.com/video/106786265 | Envoy
 
 === Horizontal Rules
 

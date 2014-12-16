@@ -44,6 +44,7 @@
 (defstruct subscript-node   "Subscript text." spans)
 (defstruct th-node          "Table header." text)
 (defstruct td-node          "Table data." text spans)
+(defstruct media-node       "Images and videos." videop url caption)
 
 (defparameter *p-class* :p
   "Default markup-node-class to use for paragraphs.")
@@ -185,6 +186,10 @@
       ((:table)
        (parse-table node))
 
+      ;; images and video
+      ((:img= :img< :img>)
+       (list (parse-media node)))
+
       ;; headings aren't marked up
       ((:h1 :h2 :h3 :h4)
        (mapcar #'(lambda (s) (make-text-node :text s)) text))
@@ -229,6 +234,12 @@
                    (prog1
                        (parse-spans node)
                      (setf node (parse-node next-line recursive-p single-line-p)))))))
+
+(defun parse-media (node)
+  "Split the text into a URL and caption. Determine if the URL is to a video."
+  (multiple-value-bind (url cap)
+      (split-re #/%s*\|%s*/ (first (markup-node-text node)))
+    (make-media-node :url url :caption cap)))
 
 (defun parse-table (node)
   "Create headers and data cells from each row."

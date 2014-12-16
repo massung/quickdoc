@@ -24,6 +24,10 @@
   ;; newlines are hard breaks
   ("\\%n+"              (values :br))
 
+  ;; unicode characters
+  ("\\u(%x%x%x%x)"      (let ((c (code-char (parse-integer $1 :radix 16))))
+                          (values :text c)))
+
   ;; escaped characters
   ("\\(.)"              (values :text $1))
 
@@ -62,7 +66,7 @@
   ("\\(.)"              (values :chars $1))
 
   ;; everything else is just characters
-  (".[^`]*"             (values :chars $$)))
+  (".[^\\`]*"           (values :chars $$)))
 
 (deflexer link-lexer
           

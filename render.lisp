@@ -36,24 +36,15 @@
 
       ;; centered image
       (:img=  `(:div ((:style "clear:both"))
-                (:center () ,@(multiple-value-bind (url cap)
-                                  (split-re #/%s*\|%s*/ (first (markup-node-text node)))
-                                `((:img ((:src ,url)))
-                                  ,@(when cap `((:div ((:class "caption")) ,cap))))))))
+                ,(render-node (first (markup-node-spans node)))))
 
       ;; left-justified image
       (:img<  `(:div ((:class "left") (:style "float:left"))
-                (:center () ,@(multiple-value-bind (url cap)
-                                  (split-re #/%s*\|%s*/ (first (markup-node-text node)))
-                                `((:img ((:src ,url)))
-                                  ,@(when cap `((:div ((:class "caption")) ,cap))))))))
+                ,(render-node (first (markup-node-spans node)))))
 
       ;; right-justified image
       (:img>  `(:div ((:class "right") (:style "float:right"))
-                (:center () ,@(multiple-value-bind (url cap)
-                                  (split-re #/%s*\|%s*/ (first (markup-node-text node)))
-                                `((:img ((:src ,url)))
-                                  ,@(when cap `((:div ((:class "caption")) ,cap))))))))
+                ,(render-node (first (markup-node-spans node)))))
 
       ;; task definition list
       (:table `(:table ((:style "clear:both") (:rules "all") (:frame "box"))
@@ -101,11 +92,11 @@
 
 (defmethod render-node ((node strong-node))
   "Render strongly emphasized text."
-  `(:strong () ,@(mapcar #'render-node (strong-node-spans node))))
+  `(:b () ,@(mapcar #'render-node (strong-node-spans node))))
 
 (defmethod render-node ((node em-node))
   "Render emphasized text."
-  `(:em () ,@(mapcar #'render-node (em-node-spans node))))
+  `(:i () ,@(mapcar #'render-node (em-node-spans node))))
 
 (defmethod render-node ((node superscript-node))
   "Render superscript text."
@@ -122,3 +113,18 @@
 (defmethod render-node ((node td-node))
   "Render a table cell node."
   `(:td ((:valign "top") (:align "left")) ,@(mapcar #'render-node (td-node-spans node))))
+
+(defmethod render-node ((node media-node))
+  "Render an image or video."
+  (let ((url (media-node-url node))
+        (cap (media-node-caption node)))
+    `(:center ()
+
+      ;; determine if the what's being linked is a video or image
+      ,(if (or (search "vimeo.com" url)
+               (search "youtube.com" url))
+           `(:iframe ((:class "video-player") (:src ,url) (:frameborder "0")))
+         `(:img ((:src ,url))))
+
+      ;; add the caption if there is one
+      ,@(when cap `((:div ((:class "caption")) ,cap))))))
