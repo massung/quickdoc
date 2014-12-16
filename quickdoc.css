@@ -1,10 +1,10 @@
 @import url("http://fonts.googleapis.com/css?family=Open+Sans:400,300,700");
 
 /* Default font */
-* { font-family: "Open Sans", Helvetica, Arial, sans-serif; font-weight: lighter; font-size: 14pt; line-height: 1.5em; }
+* { font-family: "Open Sans", Helvetica, Arial, sans-serif; font-size: 14pt; line-height: 1.5em; }
 
 /* color and margins */
-body { margin: 20px 40px; color: #515151; }
+body { margin: 20px 40px; color: #515151; font-weight: lighter; }
 
 /* headings */
 h1 { font-size: 28pt; font-weight: bold; }
@@ -32,7 +32,10 @@ a:hover { text-decoration: underline; }
 a:visited { color: #268BD2; }
 
 /* images */
-img { max-width: 100%; max-height: 240px; max-width:100%; height: auto !important; }
+img { max-width: 100%; max-height: 240px; height: auto !important; }
+
+/* videos */
+iframe.video-player { max-width: 100%; width: 540px; height: 280px !important; }
 
 /* image alignment and captioning */
 div.left { margin-right: 20px; display: block; height: auto !important; }
