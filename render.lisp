@@ -92,11 +92,15 @@
 
 (defmethod render-node ((node strong-node))
   "Render strongly emphasized text."
-  `(:b () ,@(mapcar #'render-node (strong-node-spans node))))
+  `(:strong () ,@(mapcar #'render-node (strong-node-spans node))))
 
 (defmethod render-node ((node em-node))
   "Render emphasized text."
-  `(:i () ,@(mapcar #'render-node (em-node-spans node))))
+  `(:em () ,@(mapcar #'render-node (em-node-spans node))))
+
+(defmethod render-node ((node strike-node))
+  "Render strike-through text."
+  `(:s () ,@(mapcar #'render-node (strike-node-spans node))))
 
 (defmethod render-node ((node superscript-node))
   "Render superscript text."

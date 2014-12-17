@@ -44,12 +44,13 @@ Any line that isn't formatted with a pre-defined style at the start is considere
 
 * Use `**bold**` to begin and end **bold** text.
 * Use `__italic__` to begin and end __italic__ text.
+* Use `~~strike-through~~` to begin and end ~~strike-through~~ text.
 * Use `^^` to begin and end ^^superscript^^ text.
 * Use `,,` to begin and end ,,subscript,, text.
 * Use `[[links]]` to create [[links]].
 * Use `\`pre-formatted text\`` to start and stop `pre-formatted text`.
 
-Emphasis can **__be nested__**, but you can't nest recursively.
+Emphasis can ~~**__be nested__**~~, but you can't nest recursively.
 
 Any character can be escaped (to prevent formatting) with the `\\` character. If the last line of a paragraph is `\\` then a hard `<BR>` is inserted.
 

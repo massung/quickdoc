@@ -40,6 +40,7 @@
 (defstruct link-node        "Link." url alt)
 (defstruct strong-node      "Strong text." spans)
 (defstruct em-node          "Emphasized text." spans)
+(defstruct strike-node      "Strike-through text." spans)
 (defstruct superscript-node "Superscript text." spans)
 (defstruct subscript-node   "Subscript text." spans)
 (defstruct th-node          "Table header." text)
