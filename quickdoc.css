@@ -16,6 +16,7 @@ h4 { font-size: 16pt; font-weight: bold; }
 hr { height: 1px; width: 100%; line-height: 1px; background-color: #e0e0e0; border: none; }
 
 /* middle cell for horizontal rules with text, sides use <hr> */
+div.hr { text-align: center; margin: 1.25em auto; }
 td.hr { padding: 0; font-style: italic; }
 
 /* monospace no-format */

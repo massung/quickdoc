@@ -59,17 +59,17 @@
       (:li    `(:li () ,@child-spans))
       
       ;; horizontal rules
-      (:hr    (if (plusp (length (first (markup-node-text node))))
-                  `(:center ((:style "clear:both"))
-                    (:table ((:style "width:100%;margin:0;padding:0;margin-left:auto;margin-right:auto;border:0")
-                             (:cellspacing 0)
-                             (:cellpadding 0))
-                     (:tr ()
-                      (:td () (:hr ((:style "width:100%"))))
-                      (:td ((:class "hr") (:style "width:1px;padding:0 10px;white-space:nowrap;"))
-                       ,@(markup-node-text node))
-                      (:td () (:hr ((:style "width:100%")))))))
-                `(:hr)))
+      (:hr    `(:div ((:class "hr") ("style" "clear:both"))
+                ,(if (plusp (length (first (markup-node-text node))))
+                     `(:table ((:style "width:100%;margin:0;padding:0;border:0")
+                               (:cellspacing 0)
+                               (:cellpadding 0))
+                       (:tr ()
+                        (:td () (:hr ((:style "width:100%"))))
+                        (:td ((:class "hr") (:style "width:1px;padding:0 10px;white-space:nowrap;"))
+                         ,@(markup-node-text node))
+                        (:td () (:hr ((:style "width:100%"))))))
+                   `(:hr))))
 
       ;; pre-formatted text
       (:pre   `(:pre ((:style "clear:both")) ,(format nil "~{~a~%~}" (markup-node-text node)))))))
