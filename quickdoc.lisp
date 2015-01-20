@@ -155,7 +155,7 @@
         (try "!%s(.*)"    (values :img= (string-trim '(#\space #\tab) $1)))
 
         ;; tables
-        (try "|%s(.*)"    (values :table $1)))
+        (try "%|%s(.*)"   (values :table $1)))
       
       ;; unordered and ordered list items
       (try "%*%s(.*)"     (values :ul $1))

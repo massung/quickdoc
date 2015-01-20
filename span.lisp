@@ -76,7 +76,7 @@
   ("%]%]"                (pop-lexer :-link))
 
   ;; alternate text
-  ("|"                   (swap-lexer 'alt-lexer :alt))
+  ("%|"                  (swap-lexer 'alt-lexer :alt))
   
   ;; everything else is the link
   (".[^|%]]*"            (values :url $$)))
