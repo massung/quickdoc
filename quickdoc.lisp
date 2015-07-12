@@ -197,12 +197,11 @@
 
       ;; list items can't merge, so just render them
       ((:li)
-       (parse 'span-parser (tokenize 'span-lexer (first text))))
+       (parse 'span-parser 'span-lexer (first text)))
     
       ;; everything else is plain text and joined by newlines
       (otherwise
-       (let ((para (format nil "~{~a~^~%~}" text)))
-         (parse 'span-parser (tokenize 'span-lexer para)))))))
+       (parse 'span-parser 'span-lexer (format nil "~{~a~^~%~}" text))))))
 
 (defun parse-group (next-line &optional recursive-p single-line-p)
   "Given a group of lines in the same section, parse them into nodes."
@@ -239,12 +238,12 @@
 (defun parse-media (node)
   "Split the text into a URL and caption. Determine if the URL is to a video."
   (multiple-value-bind (url cap)
-      (split-re #/%s*\|%s*/ (first (markup-node-text node)))
+      (split-re #/%s*%|%s*/ (first (markup-node-text node)))
     (make-media-node :url url :caption cap)))
 
 (defun parse-table (node)
   "Create headers and data cells from each row."
-  (flet ((make-cell (cell) (make-td-node :text cell :spans (parse 'span-parser (tokenize 'span-lexer cell))))
+  (flet ((make-cell (cell) (make-td-node :text cell :spans (parse 'span-parser 'span-lexer cell)))
          (make-header (cell) (make-th-node :text cell)))
     (loop with records = (mapcar #'parse-csv (markup-node-text node))
 

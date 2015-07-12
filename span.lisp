@@ -19,7 +19,7 @@
 
 (in-package :quickdoc)
 
-(deflexer span-lexer
+(deflexer span-lexer (s)
 
   ;; newlines are hard breaks
   ("\\%n+"               (values :br))
@@ -32,7 +32,7 @@
   ("\\(.)"               (values :text $1))
 
   ;; teletype formatting
-  ("`"                   (push-lexer 'tt-lexer :+tt))
+  ("`"                   (push-lexer s 'tt-lexer :+tt))
 
   ;; special symbols
   ("%(tm%)"              (values :text #\u+2122))
@@ -52,16 +52,16 @@
   (",,"                  (values :subscript))
 
   ;; links
-  ("%[%["                (push-lexer 'link-lexer :+link))
+  ("%[%["                (push-lexer s 'link-lexer :+link))
 
   ;; non-terminal characters
   (".[^~\\%[%(%*_`%^,]*" (values :text $$)))
 
-(deflexer tt-lexer
+(deflexer tt-lexer (s)
 
   ;; end of stream or teletype
-  ("$"                   (pop-lexer :-tt))
-  ("`"                   (pop-lexer :-tt))
+  ("$"                   (pop-lexer s :-tt))
+  ("`"                   (pop-lexer s :-tt))
 
   ;; escaped characters
   ("\\(.)"               (values :chars $1))
@@ -69,23 +69,23 @@
   ;; everything else is just characters
   (".[^\\`]*"            (values :chars $$)))
 
-(deflexer link-lexer
+(deflexer link-lexer (s)
           
   ;; end of stream, line, or link
-  ("$"                   (pop-lexer :-link))
-  ("%]%]"                (pop-lexer :-link))
+  ("$"                   (pop-lexer s :-link))
+  ("%]%]"                (pop-lexer s :-link))
 
   ;; alternate text
-  ("%|"                  (swap-lexer 'alt-lexer :alt))
+  ("%|"                  (swap-lexer s 'alt-lexer :alt))
   
   ;; everything else is the link
   (".[^|%]]*"            (values :url $$)))
 
-(deflexer alt-lexer
+(deflexer alt-lexer (s)
 
   ;; end of stream, line, or link
-  ("$"                   (pop-lexer :-link))
-  ("%]%]"                (pop-lexer :-link))
+  ("$"                   (pop-lexer s :-link))
+  ("%]%]"                (pop-lexer s :-link))
 
   ;; everything else is the alternate text
   (".[^%]]*"             (values :text $$)))
