@@ -12,6 +12,5 @@
   :serial t
   :components ((:file "quickdoc")
                (:file "lexer")
-               (:file "parser")
-               (:file "render"))
+               (:file "parser"))
   :depends-on ("base64" "csv" "re" "parse" "lexer" "html" "url"))
