@@ -5,7 +5,7 @@
 
 = QuickDoc Example
 
-This is a sample QuickDoc markup test. The source for this can be found on [[https://raw.githubusercontent.com/massung/quickdoc/master/example.qd|GitHub]]. It is a dead-simple and easily parsed wiki-style markup for [[http://www.listpworks.com|LispWorks]]. In addition to markup, it also supports meta tag information to be embedded in any generated HTML and custom stylesheeting.
+This is a sample QuickDoc markup test. The source for this can be found on [[https://raw.githubusercontent.com/massung/quickdoc/master/example.qd|GitHub]]. It is a dead-simple and easily parsed wiki-style markup for [[https://common-lisp.net/|Common Lisp]]. In addition to markup, it also supports meta tag information to be embedded in any generated HTML and custom stylesheeting.
 
 == Document Header
 
@@ -21,7 +21,7 @@ The syntax for a meta comment is `<name> : <content>`. If no `:` is present sepa
 
 The first line in the document that does not begin with an `@` begins the actual document body and any other lines beginning with `@` from then will be treated as plain text.
 
-__If no `@title` tag is present the document is left untitled.__
+__If no `@title` tag is present the document is named "Untitled".__
 
 == Body Formatting Rules
 
@@ -35,8 +35,10 @@ Headings are begun with the `=` characters (followed by a space) at the start of
 : == h2 ==
 : === h3 ===
 : ==== h4 ====
+: ===== h5 =====
+: ====== h6 ======
 
-QuickDoc limits the heading depth to four.
+QuickDoc limits the heading depth to six.
 
 === Paragraphs
 
@@ -135,17 +137,17 @@ If a line begins with a single `|` followed by a space, it is considered to be a
 | "Massung, Jeffrey", 37, M, Father
 | "Massung, Isabel", 5, F, Daughter
 
-Table data cells are parsed for markup. Header cells are left as plain text.
+Table data cells are not parsed for markup. Header cells are left as plain text.
 
 === Pre-formatted Text
 
 If you want to display entire lines of pre-formatted text, begin the line with `:` followed by a space. As with all other groups, they will coalesce until reaching an empty line or non pre-formatted line.
 
-: // Here is some sample pre-formatted text.
-:
-: void __say_hi__() {
-:     print("Hello, **world!**\n");
-: }
+: CL-USER > (flet ((initial (m)
+:                    (with-re-match (v m)
+:                      (format nil "~@(~a~)." (char $1 0)))))
+:             (replace-re #r/(%a+)%s*/ #'initial "lisp in small pieces" :all t))
+: "L.I.S.P."
 
 === Images
 
@@ -172,7 +174,5 @@ A horizontal rule can be placed anywhere by beginning a line with `---`. Text ca
 : --- That's all folks! ---
 
 --- That's all folks!---
-
-That's all there is to it.
 
 If you find QuickDoc useful, [[mailto:massung@gmail.com|please let me know]]!

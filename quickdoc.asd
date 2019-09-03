@@ -8,9 +8,10 @@
   :version "1.0"
   :author "Jeffrey Massung"
   :license "Apache 2.0"
-  :description "QuickDoc Markup for LispWorks."
+  :description "QuickDoc Markup for Common Lisp."
   :serial t
   :components ((:file "quickdoc")
-               (:file "span")
+               (:file "lexer")
+               (:file "parser")
                (:file "render"))
-  :depends-on ("lexer" "html"))
+  :depends-on ("base64" "csv" "re" "parse" "lexer" "html" "url"))

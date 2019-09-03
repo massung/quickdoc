@@ -19,116 +19,100 @@
 
 (in-package :quickdoc)
 
-(defmethod render-node ((node markup-node))
-  "Render a top-level markup node."
-  (symbol-macrolet ((child-spans (mapcar #'render-node (markup-node-spans node))))
-    (case (markup-node-class node)
-      
-      ;; headings
-      (:h1    `(:h1 ((:style "clear:both")) ,@child-spans))
-      (:h2    `(:h2 ((:style "clear:both")) ,@child-spans))
-      (:h3    `(:h3 ((:style "clear:both")) ,@child-spans))
-      (:h4    `(:h4 ((:style "clear:both")) ,@child-spans))
+;;; ----------------------------------------------------
 
-      ;; paragraphs and blockquotes
-      (:p     `(:p () ,@child-spans))
-      (:bq    `(:blockquote ((:style "clear:both")) ,@child-spans))
+(defun render-quickdoc (doc &optional (stream *standard-output*))
+  ""
+  (with-slots (meta body)
+      doc
+    (<body> (render-nodes body))))
 
-      ;; centered image
-      (:img=  `(:div ((:style "clear:both"))
-                ,(render-node (first (markup-node-spans node)))))
+(defun render-nodes (args)
+  ""
+  (mapcar #'(lambda (n) (print n) (apply #'render-node n)) args))
 
-      ;; left-justified image
-      (:img<  `(:div ((:class "left") (:style "float:left"))
-                ,(render-node (first (markup-node-spans node)))))
+(defun render-node (type &rest args)
+  ""
+  (case type
+    (:br (<br>))
 
-      ;; right-justified image
-      (:img>  `(:div ((:class "right") (:style "float:right"))
-                ,(render-node (first (markup-node-spans node)))))
+    ;; headings
+    (:h1 (<h1> :style "clear:both" args))
+    (:h2 (<h2> :style "clear:both" args))
+    (:h3 (<h3> :style "clear:both" args))
+    (:h4 (<h4> :style "clear:both" args))
+    (:h5 (<h5> :style "clear:both" args))
+    (:h6 (<h6> :style "clear:both" args))
 
-      ;; task definition list
-      (:table `(:table ((:style "clear:both") (:rules "all") (:frame "box"))
-                (:tbody ()
-                 ,@(mapcar #'(lambda (r) `(:tr () ,@(mapcar #'render-node r))) (markup-node-spans node)))))
-      
-      ;; lists
-      (:ul    `(:ul ((:style "clear:both")) ,@child-spans))
-      (:ol    `(:ol ((:style "clear:both")) ,@child-spans))
+    ;; horizontal rules
+    (:hr (<div> :class "hr" :style "clear:both"))
 
-      ;; list items
-      (:li    `(:li () ,@child-spans))
-      
-      ;; horizontal rules
-      (:hr    `(:div ((:class "hr") ("style" "clear:both"))
-                ,(if (plusp (length (first (markup-node-text node))))
-                     `(:table ((:style "width:100%;margin:0;padding:0;border:0")
-                               (:cellspacing 0)
-                               (:cellpadding 0))
-                       (:tr ()
-                        (:td () (:hr ((:style "width:100%"))))
-                        (:td ((:class "hr") (:style "width:1px;padding:0 10px;white-space:nowrap;"))
-                         ,@(markup-node-text node))
-                        (:td () (:hr ((:style "width:100%"))))))
-                   `(:hr))))
+    ;; block quotes
+    (:quote (<blockquote> :style "clear:both" (render-nodes args)))
 
-      ;; pre-formatted text
-      (:pre   `(:pre ((:style "clear:both")) ,(format nil "~{~a~%~}" (markup-node-text node)))))))
+    ;; pre-formatted text
+    (:pre (<pre> :style "clear:both" args))
 
-(defmethod render-node ((node text-node))
-  "Render a simple text node."
-  (text-node-text node))
+    ;; tables
+    (:table (let ((trs (loop
+                          for i from 0
+                          for row in args
 
-(defmethod render-node ((node br-node))
-  "Render a hard break node."
-  '(:br))
+                          ;; first row is header
+                          collect (if (zerop i)
+                                      (<th> (apply #'render-node row))
+                                    (<td> (apply #'render-node row))))))
+              (<table> (<tbody> (mapcar #'<tr> trs)))))
 
-(defmethod render-node ((node tt-node))
-  "Render a monospace text node."
-  `(:tt () ,(tt-node-text node)))
+    ;; lists
+    (:ul (<ul> :style "clear:both"
+               (loop for n in args collect (<li> (apply #'render-node n)))))
+    (:ol (<ol> :style "clear:both"
+               (loop for n in args collect (<li> (apply #'render-node n)))))
 
-(defmethod render-node ((node link-node))
-  "Render a link node."
-  `(:a ((:href ,(link-node-url node))) ,(link-node-alt node)))
+    ;; links
+    (:link (destructuring-bind (url &optional alt)
+               args
+             (<a> :href url :alt (or alt url))))
 
-(defmethod render-node ((node strong-node))
-  "Render strongly emphasized text."
-  `(:strong () ,@(mapcar #'render-node (strong-node-spans node))))
+    ;; centered images
+    (:img= (destructuring-bind (url &optional caption)
+               args
+             (<div> :style "clear:both"
+                    (<center> (<img> :src url)
+                              (when caption
+                                (<div> :class "caption" caption))))))
 
-(defmethod render-node ((node em-node))
-  "Render emphasized text."
-  `(:em () ,@(mapcar #'render-node (em-node-spans node))))
+    ;; floating left image
+    (:img< (destructuring-bind (url &optional caption)
+               args
+             (<div> :class "left"
+                    :style "float:left"
+                    (<center> (<img> :src url)
+                              (when caption
+                                (<div> :class "caption" caption))))))
 
-(defmethod render-node ((node strike-node))
-  "Render strike-through text."
-  `(:s () ,@(mapcar #'render-node (strike-node-spans node))))
+    ;; floating right image
+    (:img> (destructuring-bind (url &optional caption)
+               args
+             (<div> :class "right"
+                    :style "float:right"
+                    (<center> (<img> :src url)
+                              (when caption
+                                (<div> :class "caption" caption))))))
 
-(defmethod render-node ((node superscript-node))
-  "Render superscript text."
-  `(:sup () ,@(mapcar #'render-node (superscript-node-spans node))))
+    ;; teletype
+    (:tt (<tt> args))
 
-(defmethod render-node ((node subscript-node))
-  "Render subscript text."
-  `(:sub () ,@(mapcar #'render-node (subscript-node-spans node))))
+    ;; paragraph
+    (:p (<p> (render-nodes args)))
 
-(defmethod render-node ((node th-node))
-  "Render a definition list node."
-  `(:th ((:valign "top") (:align "left")) ,(th-node-text node)))
+    ;; spans
+    (:strong (<strong> (render-nodes args)))
+    (:em (<em> (render-nodes args)))
+    (:strike (<s> (render-nodes args)))
+    (:superscript (<sup> (render-nodes args)))
+    (:subscript (<sub> (render-nodes args)))
 
-(defmethod render-node ((node td-node))
-  "Render a table cell node."
-  `(:td ((:valign "top") (:align "left")) ,@(mapcar #'render-node (td-node-spans node))))
-
-(defmethod render-node ((node media-node))
-  "Render an image or video."
-  (let ((url (media-node-url node))
-        (cap (media-node-caption node)))
-    `(:center ()
-
-      ;; determine if the what's being linked is a video or image
-      ,(if (or (search "vimeo.com" url)
-               (search "youtube.com" url))
-           `(:iframe ((:class "video-player") (:src ,url) (:frameborder "0")))
-         `(:img ((:src ,url))))
-
-      ;; add the caption if there is one
-      ,@(when cap `((:div ((:class "caption")) ,cap))))))
+    ;; anything else is as-is
+    (otherwise args)))
