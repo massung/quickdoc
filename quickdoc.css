@@ -1,48 +1,51 @@
-@import url("http://fonts.googleapis.com/css?family=Open+Sans:400,300,700");
-
-/* Default font */
-* { font-family: "Open Sans", Helvetica, Arial, sans-serif; font-size: 14pt; line-height: 1.5em; }
+@import url("http://fonts.googleapis.com/css?family=Fira+Sans:400,300,700");
+@import url("http://fonts.googleapis.com/css?family=Fira+Mono:400,300,700");
 
 /* color and margins */
-body { margin: 20px 40px; color: #515151; font-weight: lighter; }
+div.quickdoc {
+    margin: 20px 40px;
+    color: #515151;
+    font-family: "Fira Sans", Helvetica, Arial, sans-serif;
+    font-size: 14pt;
+    font-weight: lighter;
+    line-height: 1.5em;
+}
 
 /* headings */
-h1 { font-size: 28pt; font-weight: bold; }
-h2 { font-size: 22pt; font-weight: bold; border-bottom: 1px solid #e0e0e0; }
-h3 { font-size: 18pt; font-weight: bold; }
-h4 { font-size: 16pt; font-weight: bold; }
-
-/* horizontal rules */
-hr { height: 1px; width: 100%; line-height: 1px; background-color: #e0e0e0; border: none; }
-
-/* middle cell for horizontal rules with text, sides use <hr> */
-td.hr { padding: 0; font-style: italic; }
+div.quickdoc h1 { font-size: 26pt; font-weight: bold; }
+div.quickdoc h2 { font-size: 24pt; font-weight: bold; border-bottom: 1px solid #e0e0e0; }
+div.quickdoc h3 { font-size: 22pt; font-weight: bold; }
+div.quickdoc h4 { font-size: 20pt; font-weight: bold; }
+div.quickdoc h5 { font-size: 18pt; font-weight: bold; }
+div.quickdoc h6 { font-size: 16pt; font-weight: bold; }
 
 /* monospace no-format */
-tt { font-family: "Courier New", monospace; background-color: #e8e8e8; padding-left: 2px; padding-right: 2px; font-weight: normal; font-style: normal; }
-pre { font-family: "Courier New", monospace; background-color: #e0e0e0; border: 1px solid #a0a0a0; padding: 16px; font-weight: normal; font-style: normal; line-height: 1.25em; }
+div.quickdoc tt { font-family: "Fira Mono", "Courier New", monospace; background-color: #e8e8e8; padding-left: 2px; padding-right: 2px; font-weight: normal; font-style: normal; }
+div.quickdoc pre { font-family: "Fira Mono", "Courier New", monospace; background-color: #e0e0e0; border: 1px solid #a0a0a0; padding: 16px; font-weight: normal; font-style: normal; line-height: 1.25em; overflow-x: auto; }
 
 /* links */
-a { color: #268bd2; text-decoration: none; }
-a:hover { text-decoration: underline; }
-a:visited { color: #268BD2; }
+div.quickdoc a { color: #268bd2; text-decoration: none; }
+div.quickdoc a:hover { text-decoration: underline; }
+div.quickdoc a:visited { color: #268BD2; }
 
 /* images */
-img { max-width: 100%; max-height: 240px; height: auto !important; }
-
-/* videos */
-iframe.video-player { max-width: 100%; width: 540px; height: 280px !important; }
-
-/* image alignment and captioning */
-div.left { margin-right: 20px; display: block; height: auto !important; }
-div.right { margin-left: 20px; max-width:60%; display: block; height: auto !important; }
-div.caption { font-size: smaller; font-style: italic; margin-top: 6px; }
+div.quickdoc img { clear:both; max-width: 100%; max-height: 240px; height: auto !important; }
 
 /* block quotes */
-blockquote { margin-left: 16px; padding-left: 16px; border-left: 3px solid #e0e0e0; }
+div.quickdoc blockquote { margin-left: 16px; padding-left: 16px; border-left: 3px solid #e0e0e0; }
 
 /* csv tables */
-table { border-spacing: 0; border: 1px solid #a0a0a0; }
-tbody { font-weight: lighter; }
-th { padding: 6px; background-color: #c0c0c0;font-weight: normal; }
-td { padding: 6px; }
+div.quickdoc table { border-spacing: 0; border: 1px solid #a0a0a0; }
+div.quickdoc tbody { font-weight: lighter; }
+div.quickdoc th { padding: 6px; background-color: #c0c0c0;font-weight: normal; }
+div.quickdoc td { padding: 6px; }
+div.quickdoc tr:nth-child(odd) { background-color: #f0f0f0; }
+
+/* horizontal rule */
+div.quickdoc table.hr { width: 100%; margin: 0; padding: 0; margin-left: auto; margin-right: auto; border: 0; }
+div.quickdoc table.hr tr { background-color: #fff; }
+div.quickdoc table.hr td.title { width: 1px; padding: 0 10px; white-space: nowrap; }
+div.quickdoc table.hr hr { width: 100%; height: 1px; width: 100%; line-height: 1px; background-color: #e0e0e0; border: none; }
+
+/* image and video captions */
+div.quickdoc .caption { font-style: italic; font-size: smaller; }
