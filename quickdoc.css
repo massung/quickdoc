@@ -36,8 +36,7 @@ div.quickdoc blockquote { margin-left: 16px; padding-left: 16px; border-left: 3p
 
 /* csv tables */
 div.quickdoc table { border-spacing: 0; border: 1px solid #a0a0a0; }
-div.quickdoc tbody { font-weight: lighter; }
-div.quickdoc th { padding: 6px; background-color: #c0c0c0;font-weight: normal; }
+div.quickdoc th { padding: 6px; background-color: #c0c0c0; font-weight: bold; }
 div.quickdoc td { padding: 6px; }
 div.quickdoc tr:nth-child(odd) { background-color: #f0f0f0; }
 
