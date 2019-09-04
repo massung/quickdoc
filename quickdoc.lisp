@@ -126,4 +126,5 @@
                                 :href stylesheet))
                     (<style> *default-stylesheet*)))
 
+          ;; wrap the document in a div with a named class
           (<body> (<div> :class "quickdoc" (quickdoc-body doc)))))
