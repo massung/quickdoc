@@ -35,7 +35,7 @@
 
 ;;; ----------------------------------------------------
 
-(defvar *default-stylesheet*
+(defparameter *default-stylesheet*
   #.(let ((root (or *compile-file-pathname* *load-pathname*)))
       (slurp (merge-pathnames "quickdoc.css" root))))
 
