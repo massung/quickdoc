@@ -12,14 +12,14 @@ The `quickdoc` package has a few functions:
 
 ```
 (parse-quickdoc pathname)                                   ;=> quickdoc
+(render-quickdoc doc &optional stylesheet embed)            ;=> HTML
 (compile-quickdoc doc pathname &optional stylesheet embed)  ;=> nil
-(render-quickdoc doc &optional stream)                      ;=> nil
 ```
 
 Pass a pathname to `parse-quickdoc`, which will read the file and parse it into a `quickdoc` object and return it.
 
-The `compile-quickdoc` method will compile a `quickdoc` into HTML and write it the the pathname file on disk (overwriting if it already exists). If `stylesheet` is provided it should be a pathname and `embed` is a flag indicating whether or not the stylesheet provided is embedded with a `<style>` tag or linked to with a `<link>` tag. If a stylesheet is not provided, then the default stylesheet is used and it is embedded into the document.
+If you just want to get the final HTML of a `quickdoc` body, simply call `render-quickdoc`. This will return a complete `<html>` tag with a `<head>` and `<body>`. If `stylesheet` is provided it should be a pathname to a CSS file. The `embed` flag indicates whether or not the stylesheet provided is embedded with a `<style>` tag or linked to with a `<link>` tag. If a stylesheet is not provided, then the default stylesheet is used and it is embedded into the document.
 
-If you just want to get the final HTML of a `quickdoc` body, simply call `render-quickdoc`. This will not render the `<HEAD>` or `<BODY>` tags, but will just output all the final HTML within the `<BODY>` tag.
+The `compile-quickdoc` method will render the HTML produced by `render-quickdoc` to a file, overwriting if it already exists.
 
 ## fin.
