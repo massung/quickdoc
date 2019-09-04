@@ -107,24 +107,23 @@
 (defun compile-quickdoc (doc pathname &optional stylesheet embed)
   "Render the HTML of a quickdoc to a file."
   (with-open-file (fs pathname :direction :output :if-exists :supersede)
-    (let ((head (<head> (quickdoc-meta-tags doc)
-                        (quickdoc-title doc)
-
-                        ;; embed the optional stylesheet
-                        (if stylesheet
-                            (if embed
-                                (<style> (slurp stylesheet))
-                              (<link> :rel "stylesheet"
-                                      :type "text/css"
-                                      :href stylesheet))
-                          (<style> *default-stylesheet*))))
-
-          ;; the body is a div wrapping all the elements
-          (body (<body> (<div> :class "quickdoc" (quickdoc-body doc)))))
-      (html-render (<html> head body) fs))))
+    (let ((html (render-quickdoc doc stylesheet embed)))
+      (html-render html fs))))
 
 ;;; ----------------------------------------------------
 
-(defun render-quickdoc (doc &optional (stream *standard-output*))
-  "Output the HTML of a quickdoc body to a stream."
-  (html-render (quickdoc-body doc) stream))
+(defun render-quickdoc (doc &optional stylesheet embed)
+  "Convert the document to HTML and return it."
+  (<html> (<head> (quickdoc-meta-tags doc)
+                  (quickdoc-title doc)
+
+                  ;; embed the optional stylesheet
+                  (if stylesheet
+                      (if embed
+                          (<style> (slurp stylesheet))
+                        (<link> :rel "stylesheet"
+                                :type "text/css"
+                                :href stylesheet))
+                    (<style> *default-stylesheet*)))
+
+          (<body> (<div> :class "quickdoc" (quickdoc-body doc)))))
