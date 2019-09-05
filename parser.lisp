@@ -41,6 +41,7 @@
   (.or 'header
        'rule
        'blockquote
+       'aside
        'pre
        'table
        'unordered-list
@@ -63,28 +64,8 @@
 
 (define-parser rule
   (.let (cap (.is :hr))
-    (.ret (let ((hr (<hr> :style '("border:none;"
-                                   "height:1px;"
-                                   "width:100%;"
-                                   "line-height:1px;"))))
-            (<center> :style "clear:both"
-                      (<table> :class "hr"
-                               :cellspacing 0
-                               :cellpadding 0
-                               :style '("width:100%;"
-                                        "margin:0 auto;"
-                                        "padding:0;"
-                                        "border:0;")
-
-                               ;; allow for a caption
-                               (<tr> :style "background:transparent"
-                                     (<td> hr)
-                                     (when (plusp (length cap))
-                                       (<td> :style '("width:1px;"
-                                                      "padding:0;"
-                                                      "white-space:nowrap")
-                                             cap))
-                                     (<td> hr))))))))
+    (.ret (<center> (when (plusp (length cap)) cap)
+                    (<hr>)))))
 
 ;;; ----------------------------------------------------
 
@@ -94,23 +75,26 @@
 
 ;;; ----------------------------------------------------
 
+(define-parser aside
+  (.let (ss (.many1 (.is :aside)))
+    (.ret (<aside> (parse-text-spans (format nil "~{~a~%~}" ss))))))
+
+;;; ----------------------------------------------------
+
 (define-parser pre
   (.let (ss (.many1 (.is :pre)))
-    (.ret (<pre> (loop for s in ss collect s collect (<br>))))))
+    (.ret (<pre> (<code> (loop for s in ss collect s collect (<br>)))))))
 
 ;;; ----------------------------------------------------
 
 (define-parser table
-  (flet ((th (value)
-           (<th> :align "left" :valign "top" value))
-         (td (value)
-           (<td> :align "left" :valign "top" value)))
-    (.let (xs (.many1 (.is :tr)))
-      (.ret (destructuring-bind (th &rest trs)
-                xs
-              (<table> (<tr> (mapcar #'th th))
-                     (mapcar #'(lambda (tr)
-                                 (<tr> (mapcar #'td tr))) trs)))))))
+  (.let (xs (.many1 (.is :tr)))
+    (.ret (destructuring-bind (h &rest rows)
+              xs
+            (<table> (<thead> (<tr> (mapcar #'<th> h)))
+                     (<tbody> (loop
+                                 for row in rows
+                                 collect (<tr> (mapcar #'<td> row)))))))))
 
 ;;; ----------------------------------------------------
 
@@ -137,7 +121,7 @@
 
 (define-parser list-item
   (.let (s (.is :p))
-    (.ret (<li> s))))
+    (.ret (<li> (parse-text-spans s)))))
 
 ;;; ----------------------------------------------------
 
@@ -146,25 +130,25 @@
              (with-url (url src)
                (let ((host (url-domain url)))
                  (member host *video-domains* :test #'equalp))))
-           (make-tag (style src &optional caption)
-             (<center> :style style
+           (make-tag (class src &optional caption)
+             (<figure> :class class
                        (if (video-p src)
                            (<iframe> :src src
                                      :frameborder 0
                                      :allowfullscreen nil
-                                     :width "60%"
+                                     :width 500
                                      :height 300)
                          (<img> :src src))
 
                        ;; optional caption
-                       (when caption
-                         (<div> :class "caption" caption)))))
+                       (when (plusp (length caption))
+                         (<div> caption)))))
     (.or (.let (link (.is :img=))
-           (.ret (apply #'make-tag "clear:both" link)))
+           (.ret (apply #'make-tag "clear" link)))
          (.let (link (.is :img<))
-           (.ret (apply #'make-tag "float:left;padding-right:8px" link)))
+           (.ret (apply #'make-tag "pull-left" link)))
          (.let (link (.is :img>))
-           (.ret (apply #'make-tag "float:right;padding-left:8px" link))))))
+           (.ret (apply #'make-tag "pull-right" link))))))
 
 ;;; ----------------------------------------------------
 

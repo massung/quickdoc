@@ -125,6 +125,16 @@ Any line beginning with `>` followed by a space will begin a blockquote. Like li
 > nulla pariatur. Excepteur sint occaecat cupidatat non proident,
 > sunt in culpa qui officia deserunt mollit anim id est laborum.
 
+=== Notes
+
+You can create an aside note with `?` followed by a space and all the text inside will be formatted like a paragraph (it isn't recursive like a blockquote).
+
+: ? **Notice** Watch this space!
+: ? You never know when something cool will appear.
+
+? **Notice** Watch this space!
+? You never know when something cool will appear.
+
 === Tables
 
 If a line begins with a single `|` followed by a space, it is considered to be a CSV table record. The record is parsed according to [[https://tools.ietf.org/html/rfc4180|RFC 4180]] and displayed. The very first record in a table is assumed to be the header row.
@@ -169,7 +179,7 @@ Videos can be embedded with `!` as well. The URL must be a link to an embedded [
 
 === Horizontal Rules
 
-A horizontal rule can be placed anywhere by beginning a line with `---`. Text can optionally follow the `---`, which the renderer may use to create a horizontal rule with text inside it.
+A horizontal rule can be placed anywhere by beginning a line with `---`. Text can optionally be centered immediately above the horizontal rule by putting it after the `---`.
 
 : --- That's all folks! ---
 

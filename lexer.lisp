@@ -52,6 +52,9 @@
   ;; block quotes
   (">(?%s(%N+))?"       (values :quote (or $1 "")))
 
+  ;; aside notes
+  ("%?(?%s(%N+))?"      (values :aside (or $1 "")))
+
   ;; table records
   ("%|%s(%N+)"          (values :tr (parse-table-row $1)))
 
@@ -76,7 +79,7 @@
 (define-lexer span-lexer (s)
 
   ;; forced line break
-  ("\\%r?%n"             (values :br))
+  ("\\(?%r?%n|$)"        (values :br))
 
   ;; unicode and escaped characters
   ("\\u(%x%x%x%x)"       (values :text (unicode-char $1)))

@@ -35,7 +35,7 @@
 
 ;;; ----------------------------------------------------
 
-(defparameter *default-stylesheet*
+(defparameter *default-css*
   #.(let ((root (or *compile-file-pathname* *load-pathname*)))
       (slurp (merge-pathnames "quickdoc.css" root))))
 
@@ -119,14 +119,12 @@
 
                   ;; embed the optional styleshee
                   (if (null stylesheets)
-                      (<style> *default-stylesheet*)
+                      (<style> *default-css*)
                     (loop
                        for css in stylesheets
                        collect (if embed
                                    (<style> (slurp css))
-                                 (<link> :href css
-                                         :type "text/css"
-                                         :rel "stylesheet")))))
+                                 (<link> :rel "stylesheet" :href css)))))
 
           ;; wrap the document in a div with a named class
-          (<body> (<article> :class "quickdoc" (quickdoc-body doc)))))
+          (<body> (<div> :class "content" (quickdoc-body doc)))))
