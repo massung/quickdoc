@@ -62,18 +62,29 @@
 ;;; ----------------------------------------------------
 
 (define-parser rule
-  (.let (caption (.is :hr))
-    (.ret (<center> :style "clear:both"
-                    (<table> :class "hr"
-                             :cellspacing 0
-                             :cellpadding 0
+  (.let (cap (.is :hr))
+    (.ret (let ((hr (<hr> :style '("border:none;"
+                                   "height:1px;"
+                                   "width:100%;"
+                                   "line-height:1px;"))))
+            (<center> :style "clear:both"
+                      (<table> :class "hr"
+                               :cellspacing 0
+                               :cellpadding 0
+                               :style '("width:100%;"
+                                        "margin:0 auto;"
+                                        "padding:0;"
+                                        "border:0;")
 
-                             ;; allow for a caption
-                             (if caption
-                                 (<tr> (<td> (<hr>))
-                                       (<td> :class "title" caption)
-                                       (<td> (<hr>)))
-                               (<tr> (<td> (<hr>)))))))))
+                               ;; allow for a caption
+                               (<tr> :style "background:transparent"
+                                     (<td> hr)
+                                     (when (plusp (length cap))
+                                       (<td> :style '("width:1px;"
+                                                      "padding:0;"
+                                                      "white-space:nowrap")
+                                             cap))
+                                     (<td> hr))))))))
 
 ;;; ----------------------------------------------------
 

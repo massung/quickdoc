@@ -44,10 +44,10 @@
   ("======%s(%N+)"      (values :h6 (strip-header $1)))
 
   ;; horizontal rules
-  ("%-%-%-%s(%N*)"      (values :hr (strip-rule $1)))
+  ("%-%-%-%s*(%N*)"     (values :hr (strip-rule $1)))
 
   ;; pre-formatted text
-  (":(?%s(%N+))?"        (values :pre (or $1 "")))
+  (":(?%s(%N+))?"       (values :pre (or $1 "")))
 
   ;; block quotes
   (">(?%s(%N+))?"       (values :quote (or $1 "")))
