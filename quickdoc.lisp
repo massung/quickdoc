@@ -127,4 +127,4 @@
                                  (<link> :rel "stylesheet" :href css)))))
 
           ;; wrap the document in a div with a named class
-          (<body> (<div> :class "content" (quickdoc-body doc)))))
+          (<body> (<article> (quickdoc-body doc)))))
