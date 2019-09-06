@@ -45,7 +45,8 @@
   '("www.youtube.com"
     "youtube.com"
     "y2u.be"
-    "player.vimeo.com"))
+    "player.vimeo.com")
+  "Domain names to embed videos in iframes.")
 
 ;;; ----------------------------------------------------
 
