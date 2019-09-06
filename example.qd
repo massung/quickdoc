@@ -1,7 +1,10 @@
 @Title       : QuickDoc Example
 @Author      : Jeff Massung
-@Date        : 2014.12.2
-@Description : An example of everything QuickDoc can do in one place.
+@Date        : 6 September, 2019
+@Home        : http://codeninja.blog
+@Email       : massung@gmail.com
+@GitHub      : massung
+@Twitter     : @codeninja_blog
 
 = QuickDoc Example
 
@@ -50,6 +53,7 @@ Any line that isn't formatted with a pre-defined style at the start is considere
 * Use `^^` to begin and end ^^superscript^^ text.
 * Use `,,` to begin and end ,,subscript,, text.
 * Use `[[links]]` to create [[links]].
+* Use `[[href | captioned links]]` to create [[href | captioned links]].
 * Use `\`pre-formatted text\`` to start and stop `pre-formatted text`.
 
 Emphasis can ~~**__be nested__**~~, but you can't nest recursively.
@@ -130,10 +134,10 @@ Any line beginning with `>` followed by a space will begin a blockquote. Like li
 You can create an aside note with `?` followed by a space and all the text inside will be formatted like a paragraph (it isn't recursive like a blockquote).
 
 : ? **Notice** Watch this space!
-: ? You never know when something cool will appear.
+: ? You never know when something new will appear.
 
 ? **Notice** Watch this space!
-? You never know when something cool will appear.
+? You never know when something new will appear.
 
 === Tables
 

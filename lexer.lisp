@@ -163,5 +163,6 @@
 
 (defun parse-link (link)
   "Extract the optional, alternate name for a url."
-  (with-re-match (m (match-re #r"([^%s|]+)%s*(?%|%s*(.*))?" link))
-    (list $1 $2)))
+  (with-re-match (m (match-re #r"([^|]+)(?%|(.*))?" link))
+    (let ((href (strip-tag $1)))
+      (list href (if $2 (strip-tag $2) href)))))
