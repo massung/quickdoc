@@ -163,7 +163,7 @@ tt {
     font-size: 80%;
 }
 
-pre>code {
+code {
     display: block;
     padding: 1rem 1.5rem;
     white-space: pre;
@@ -207,7 +207,7 @@ thead {
 
 
 /* Spacing */
-pre,
+code,
 blockquote,
 aside,
 figure,
