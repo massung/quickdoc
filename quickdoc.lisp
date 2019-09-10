@@ -44,6 +44,7 @@
 (defparameter *video-domains*
   '("www.youtube.com"
     "youtube.com"
+    "youtu.be"
     "y2u.be"
     "player.vimeo.com")
   "Domain names to embed videos in iframes.")
