@@ -119,7 +119,7 @@
   (<html> (<head> (quickdoc-meta-tags doc)
                   (quickdoc-title doc)
 
-                  ;; embed the optional styleshee
+                  ;; embed the optional stylesheets
                   (if (null stylesheets)
                       (<style> *default-css*)
                     (loop
