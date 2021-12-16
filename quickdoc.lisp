@@ -18,7 +18,7 @@
 ;;;;
 
 (defpackage :quickdoc
-  (:use :cl :re :lexer :csv :parse :html :url)
+  (:use :cl :boost-re :boost-lexer :boost-csv :boost-parse :boost-html :boost-url)
   (:nicknames :qd)
   (:export
    #:parse-quickdoc
