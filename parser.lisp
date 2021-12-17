@@ -126,29 +126,22 @@
 ;;; ----------------------------------------------------
 
 (define-parser img
-  (labels ((video-p (src)
-             (with-url (url src)
-               (let ((host (url-domain url)))
-                 (member host *video-domains* :test #'equalp))))
-           (make-tag (class src &optional caption)
-             (<figure> :class class
-                       (if (video-p src)
-                           (<iframe> :src src
-                                     :frameborder 0
-                                     :allowfullscreen nil
-                                     :width 500
-                                     :height 300)
-                         (<img> :src src))
-
-                       ;; optional caption
-                       (when (plusp (length caption))
-                         (<div> caption)))))
-    (.or (.let (link (.is :img=))
-           (.ret (apply #'make-tag "clear" link)))
-         (.let (link (.is :img<))
-           (.ret (apply #'make-tag "pull-left" link)))
-         (.let (link (.is :img>))
-           (.ret (apply #'make-tag "pull-right" link))))))
+  (flet ((image (src &optional caption)
+           (<figure> (<img> :src src)
+                     (when (plusp (length caption))
+                       (<div> caption))))
+         (video (src &optional caption)
+           (<figure> (<iframe> :src src
+                               :frameborder 0
+                               :allowfullscreen nil
+                               :width 500
+                               :height 300)
+                     (when (plusp (length caption))
+                       (<div> caption)))))
+    (.or (.let (link (.is :img))
+           (.ret (apply #'image link)))
+         (.let (link (.is :video))
+           (.ret (apply #'video link))))))
 
 ;;; ----------------------------------------------------
 

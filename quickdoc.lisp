@@ -21,9 +21,9 @@
   (:use :cl :boost-re :boost-lexer :boost-csv :boost-parse :boost-html :boost-url)
   (:nicknames :qd)
   (:export
-   #:parse-quickdoc
-   #:compile-quickdoc
-   #:render-quickdoc
+   #:quickdoc-parse
+   #:quickdoc-compile
+   #:quickdoc-render
 
    ;; reader methods
    #:quickdoc-tags
@@ -97,7 +97,7 @@
 
 ;;; ----------------------------------------------------
 
-(defun parse-quickdoc (pathname)
+(defun quickdoc-parse (pathname)
   "Create a quickdoc object by parsing the file at the given location."
   (let ((source (slurp pathname)))
     (destructuring-bind (tags body)
@@ -106,17 +106,20 @@
 
 ;;; ----------------------------------------------------
 
-(defun compile-quickdoc (doc pathname &optional stylesheets embed)
+(defun quickdoc-compile (doc pathname &optional stylesheets embed)
   "Render the HTML of a quickdoc to a file."
   (with-open-file (fs pathname :direction :output :if-exists :supersede)
-    (let ((html (render-quickdoc doc stylesheets embed)))
+    (let ((html (quickdoc-render doc stylesheets embed)))
       (html-render html fs))))
 
 ;;; ----------------------------------------------------
 
-(defun render-quickdoc (doc &optional stylesheets embed)
+(defun quickdoc-render (doc &optional stylesheets embed)
   "Convert the document to HTML and return it."
-  (<html> (<head> (quickdoc-meta-tags doc)
+  (<html> (<head> (<meta> :charset "UTF-8")
+
+                  ;; document info
+                  (quickdoc-meta-tags doc)
                   (quickdoc-title doc)
 
                   ;; embed the optional stylesheets
@@ -130,3 +133,12 @@
 
           ;; wrap the document in a div with a named class
           (<body> (<article> (quickdoc-body doc)))))
+
+;;; ----------------------------------------------------
+
+(defun example ()
+  "Generate the example HTML page."
+  (let* ((root #.(or *compile-file-pathname* *load-pathname*))
+         (qd (merge-pathnames "example.qd" root))
+         (html (merge-pathnames "example.html" root)))
+    (quickdoc-compile (quickdoc-parse qd) html)))

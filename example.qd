@@ -18,7 +18,7 @@ At the very beginning of the document, if a line begins with a `@` then it is co
 : @Author : Me
 : @Date   : Today
 
-The above will set the `<TITLE>` of the QuickDoc to "Example QuickDoc" and add `<META>` tags for "author" and "date" __(note how "author" and "date" are downcased, all meta comment keys are case-insensitive and forced lowercase)__.
+The above will set the `<TITLE>` of the QuickDoc to "Example QuickDoc" and add `<META>` tags for "author" and "date" (__note how "author" and "date" are downcased, all meta comment keys are case-insensitive and forced lowercase__).
 
 The syntax for a meta comment is `<name> : <content>`. If no `:` is present separating the name and content, then the entire comment is considered to be the name and the content attribute is left as empty.
 
@@ -165,21 +165,21 @@ If you want to display entire lines of pre-formatted text, begin the line with `
 
 === Images
 
-Images are not ever embedded into paragraphs. They are on a line of their own, and centered. Any line that begins with a `!` followed by a space will be an image where the rest of the line is the address of the image to display. Using `!<` or `!>` will align the image to the left and right of any text following it. You can insert a caption for the image by using a `|` after the URL for the image. Any text after the `|` will be used as the caption.
+Images are not ever embedded into paragraphs. They are on a line of their own, and centered. Any line that begins with a `!` followed by a space will be an image where the rest of the line is the address of the image to display. You can insert a caption for the image by using a `|` after the URL for the image. Any text after the `|` will be used as the caption.
 
-: !> http://imgs.xkcd.com/comics/lisp_cycles.png | A funny Lisp comic
+: ! http://imgs.xkcd.com/comics/lisp_cycles.png | A funny Lisp comic
 
-!> http://imgs.xkcd.com/comics/lisp_cycles.png | A funny Lisp comic
+! http://imgs.xkcd.com/comics/lisp_cycles.png | A funny Lisp comic
 
 While there is no method of specifying the size of the image to display, the CSS for the HTML rendering is allowed to set the max-height of centered images to something reasonable (240px is recommended) and a maximum width for left- and right-justified images.
 
 === Videos
 
-Videos can be embedded with `!` as well. The URL must be a link to an embedded [[http://www.youtube.com|YouTube]] or [[http://www.vimeo.com|Vimeo]] video. Captioning and aligning all work the same as images. The QuickDoc parser will simply recognize that the URL is to one of those sites and embed it as such.
+Videos can be embedded as well with `!>`. The URL must be a link to an embedded [[http://www.youtube.com|YouTube]] or [[http://www.vimeo.com|Vimeo]] video. Captioning and aligning all work the same as images. The QuickDoc parser will simply recognize that the URL is to one of those sites and embed it as such.
 
-: ! http://player.vimeo.com/video/106786265 | Envoy
+: !> http://player.vimeo.com/video/106786265 | Envoy
 
-! http://player.vimeo.com/video/106786265 | Envoy
+!> http://player.vimeo.com/video/106786265 | Envoy
 
 === Horizontal Rules
 

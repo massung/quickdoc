@@ -63,9 +63,8 @@
   ("#%s(%N+)"           (values :ol $1))
 
   ;; embedded images and video
-  ("!%s(%N+)"           (values :img= (parse-link $1)))
-  ("!<%s(%N+)"          (values :img< (parse-link $1)))
-  ("!>%s(%N+)"          (values :img> (parse-link $1)))
+  ("!%s(%N+)"           (values :img (parse-link $1)))
+  ("!>%s(%N+)"          (values :video (parse-link $1)))
 
   ;; skip single newlines
   ("%r?%n%n%n+"         (values :div))
